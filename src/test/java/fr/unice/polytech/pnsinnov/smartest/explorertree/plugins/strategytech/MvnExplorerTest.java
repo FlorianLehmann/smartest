@@ -1,16 +1,16 @@
 package fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.strategytech;
 
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class MvnExplorerTest {
+
+class MvnExplorerTest {
     @Test
-    public void findAllModules() {
+    void findAllModules() {
         MvnExplorer mvnExplorer = new MvnExplorer();
 
         assertEquals(1, mvnExplorer.findAllModules(new File(Paths.get("").toAbsolutePath().toString())).size());
