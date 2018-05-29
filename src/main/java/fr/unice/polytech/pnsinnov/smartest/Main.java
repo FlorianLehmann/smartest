@@ -4,7 +4,6 @@ import fr.unice.polytech.pnsinnov.smartest.commandline.Smartest;
 
 public class Main {
     public static void main(String[] args) {
-
         /*
         ConfigReader reader = new ConfigReader("./resources/config.smt");
 
@@ -20,10 +19,9 @@ public class Main {
             }
         }
 
-        TreeModule module = new TreeModule.TreeModuleBuilder().withProjectBase("C:\\Users\\Enzo\\Desktop\\Nouveau dossier\\main").withPlugin(toUse).build();
+        TreeModule module = new TreeModule.TreeModuleBuilder().withProjectBase(Paths.get("").toAbsolutePath().toString()).withPlugin(toUse).build();
 
-         */
-
+        */
         new Smartest(System.out).parse(args);
     }
 }
