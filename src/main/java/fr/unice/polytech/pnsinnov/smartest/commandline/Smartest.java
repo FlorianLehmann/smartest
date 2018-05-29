@@ -2,11 +2,12 @@ package fr.unice.polytech.pnsinnov.smartest.commandline;
 
 import fr.unice.polytech.pnsinnov.smartest.commandline.command.Commit;
 import fr.unice.polytech.pnsinnov.smartest.commandline.command.ListTests;
+import fr.unice.polytech.pnsinnov.smartest.commandline.command.Test;
 import picocli.CommandLine;
 
 import java.io.PrintStream;
 
-@CommandLine.Command(description = "Smartest.", name = "smartest", mixinStandardHelpOptions = true, version = "smartest 1.0", subcommands = {Commit.class, ListTests.class})
+@CommandLine.Command(description = "Smartest.", name = "smartest", mixinStandardHelpOptions = true, version = "smartest 1.0", subcommands = {Commit.class, ListTests.class, Test.class})
 public class Smartest implements Runnable {
     private final CommandLine commandLine;
     private final PrintStream out;
