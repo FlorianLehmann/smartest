@@ -1,7 +1,5 @@
 package fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.strategytech;
 
-
-
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
