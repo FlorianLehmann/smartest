@@ -12,6 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <compiler.source>1.8</compiler.source>
         <compiler.target>1.8</compiler.target>
+        <tests.directory>src/test/java</tests.directory>
     </properties>
 
     <dependencies>
@@ -52,6 +53,7 @@
     </dependencies>
 
     <build>
+        <testSourceDirectory>${tests.directory}</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
