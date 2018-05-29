@@ -1,6 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.commandline.command;
 
 import fr.unice.polytech.pnsinnov.smartest.commandline.Command;
+import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.lib.Repository;
@@ -18,14 +19,15 @@ public class Commit extends Command {
     private String message;
 
     public void run() {
-        // Run commit process
-
         try {
             Git git = Git.open(new File(Paths.get("").toAbsolutePath().toString(), ".git"));
-
-            //git.add().addFilepattern("*").call();
-
-            git.commit().setAll(true).setMessage("test the automatic commit").call();
+            AddCommand add = git.add();
+            for (String path : git.status().call().getUncommittedChanges()) {
+                add.addFilepattern(path);
+            }
+            add.call();
+            git.commit().setMessage(message).call();
+            git.close();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (AbortedByHookException e) {
@@ -45,7 +47,5 @@ public class Commit extends Command {
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
-
-
     }
 }
