@@ -1,16 +1,11 @@
 package fr.unice.polytech.pnsinnov.smartest.parser.processors;
 
 import fr.unice.polytech.pnsinnov.smartest.parser.Database;
-import spoon.compiler.Environment;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessorTests extends AbstractProcessor<CtClass> {

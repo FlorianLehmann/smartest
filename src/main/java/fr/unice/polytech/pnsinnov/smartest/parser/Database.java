@@ -2,7 +2,7 @@ package fr.unice.polytech.pnsinnov.smartest.parser;
 
 import java.util.*;
 
-public class Database {
+public class Database implements DatabaseCodeAnalysis {
 
     private Map<String, Set<String>> testsClassMapping;
 
@@ -19,14 +19,22 @@ public class Database {
         return instance;
     }
 
+    @Override
+    public Set<String> getTestLinkToClass(String cls) {
+        return testsClassMapping.get(cls);
+    }
+
+    @Override
     public boolean contain(String cls) {
         return testsClassMapping.containsKey(cls);
     }
 
+    @Override
     public void addClass(String cls) {
         testsClassMapping.put(cls, new HashSet<>());
     }
 
+    @Override
     public void linkClassToTest(String cls, String clsTest) {
         testsClassMapping.get(cls).add(clsTest);
     }
