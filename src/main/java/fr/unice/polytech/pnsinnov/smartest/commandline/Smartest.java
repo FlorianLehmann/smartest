@@ -14,7 +14,8 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.List;
 
-@CommandLine.Command(description = "Smartest.", name = "smartest", mixinStandardHelpOptions = true, version = "smartest 1.0", subcommands = {Commit.class, ListTests.class, Test.class})
+@CommandLine.Command(description = "Smartest.", name = "smartest", mixinStandardHelpOptions = true,
+        version = "smartest 1.0", subcommands = {Commit.class, ListTests.class, Test.class})
 public class Smartest implements Runnable {
     private final CommandLine commandLine;
     private final Context context;
@@ -22,10 +23,18 @@ public class Smartest implements Runnable {
     public Smartest(InputStream in, PrintStream out, PrintStream err) {
         context = new Context().useIn(in).useOut(out).useErr(err);
         commandLine = new CommandLine(this);
+        addContextToCommands();
+    }
+
+    private void addContextToCommands() {
+        for (CommandLine cmd : commandLine.getSubcommands().values()) {
+            cmd.<Command>getCommand().setContext(context);
+        }
     }
 
     public void parse(String[] args) {
-        commandLine.parseWithHandlers(new CommandLine.RunAll().useOut(context.out()).useErr(context.err()), new CommandLine.DefaultExceptionHandler<>(), args);
+        commandLine.parseWithHandlers(new CommandLine.RunAll().useOut(context.out()).useErr(context.err()),
+                new CommandLine.DefaultExceptionHandler<>(), args);
     }
 
     public void run() {
@@ -43,7 +52,8 @@ public class Smartest implements Runnable {
         List<Plugin> plugins = new PluginTechRetriever().retrieveAllPlugins();
         Plugin toUse = new DefaultPlugin();
         for (Plugin plugin : plugins) {
-            if (plugin.accept(reader.getLangageFromConfig(), reader.getTestFrameworkFromConfig(), reader.getManagementFromConfig())) {
+            if (plugin.accept(reader.getLangageFromConfig(), reader.getTestFrameworkFromConfig(), reader
+                    .getManagementFromConfig())) {
                 toUse = plugin;
                 break;
             }
