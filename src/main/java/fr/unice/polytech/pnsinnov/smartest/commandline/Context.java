@@ -1,5 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.commandline;
 
+import fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.Plugin;
+
 import java.io.InputStream;
 import java.io.PrintStream;
 
@@ -7,6 +9,12 @@ public class Context {
     private InputStream in;
     private PrintStream out;
     private PrintStream err;
+    private Plugin plugin;
+
+    Context usePlugin(Plugin plugin){
+        this.plugin = plugin;
+        return this;
+    }
 
     Context useIn(InputStream in) {
         this.in = in;
@@ -33,5 +41,9 @@ public class Context {
 
     public PrintStream err() {
         return err;
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
     }
 }

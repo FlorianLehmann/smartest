@@ -58,6 +58,7 @@ public class Smartest implements Runnable {
                 break;
             }
         }
-        TreeModule module = new TreeModule.TreeModuleBuilder().withProjectBase(".").withPlugin(toUse).build();
+
+        context.usePlugin(toUse);
     }
 }

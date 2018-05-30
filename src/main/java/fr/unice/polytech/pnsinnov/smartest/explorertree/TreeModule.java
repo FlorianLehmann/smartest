@@ -1,7 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.explorertree;
 
 import fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.Plugin;
-import fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.strategytech.Explorer;
+import fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.explorers.Explorer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,6 +23,10 @@ public class TreeModule {
 
     private void findAllModules(File baseDir) {
         pathsToModules = explorer.findAllModules(baseDir);
+    }
+
+    public List<String> getPathsToModules() {
+        return pathsToModules;
     }
 
     public static class TreeModuleBuilder {
