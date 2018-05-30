@@ -40,24 +40,10 @@ public class Commit extends Command {
 
             add.call();
             git.commit().setMessage(message).call();
-        } catch (AbortedByHookException e) {
-            e.printStackTrace();
-        } catch (ConcurrentRefUpdateException e) {
-            e.printStackTrace();
-        } catch (NoHeadException e) {
-            e.printStackTrace();
-        } catch (UnmergedPathsException e) {
-            e.printStackTrace();
-        } catch (NoFilepatternException e) {
-            e.printStackTrace();
-        } catch (NoMessageException e) {
-            e.printStackTrace();
-        } catch (WrongRepositoryStateException e) {
-            e.printStackTrace();
         } catch (GitAPIException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            context.out().println("The \".git\" was not found in this folder");
         } finally {
             if (git != null){
                 git.close();

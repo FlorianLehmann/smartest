@@ -1,7 +1,10 @@
 package fr.unice.polytech.pnsinnov.smartest;
 
-import static org.junit.jupiter.api.Assertions.*;
+public class MainTest {
 
-class MainTest {
+    @org.junit.Test
+    public void basicTest(){
+        org.junit.Assert.assertFalse(false);
+    }
 
 }
