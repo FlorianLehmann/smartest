@@ -10,8 +10,6 @@ import fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.DefaultPlugin;
 import fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.Plugin;
 import picocli.CommandLine;
 
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.List;
 
 @CommandLine.Command(description = "Smartest.", name = "smartest", mixinStandardHelpOptions = true,
@@ -20,8 +18,13 @@ public class Smartest implements Runnable {
     private final CommandLine commandLine;
     private final Context context;
 
-    public Smartest(InputStream in, PrintStream out, PrintStream err) {
-        context = new Context().useIn(in).useOut(out).useErr(err);
+
+    public Smartest() {
+        this(new Context().useIn(System.in).useOut(System.out).useErr(System.err));
+    }
+
+    public Smartest(Context context) {
+        this.context = context;
         commandLine = new CommandLine(this);
         addContextToCommands();
     }
@@ -60,5 +63,13 @@ public class Smartest implements Runnable {
         }
 
         context.usePlugin(toUse);
+    }
+
+    CommandLine getCommandLine() {
+        return commandLine;
+    }
+
+    public Context getContext() {
+        return context;
     }
 }
