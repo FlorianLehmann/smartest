@@ -32,4 +32,16 @@ public class MvnExplorer implements Explorer {
 
         return res;
     }
+
+    @Override
+    public String getPathToSrc() {
+        //TODO PARSER LE POM.XML ?
+        return "src/main/java";
+    }
+
+    @Override
+    public String getPathToTest() {
+        //TODO PARSER LE POM.XML ?
+        return "src/test/java";
+    }
 }

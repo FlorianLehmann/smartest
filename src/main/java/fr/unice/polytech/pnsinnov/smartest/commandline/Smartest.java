@@ -5,11 +5,12 @@ import fr.unice.polytech.pnsinnov.smartest.commandline.command.ListTests;
 import fr.unice.polytech.pnsinnov.smartest.commandline.command.Test;
 import fr.unice.polytech.pnsinnov.smartest.explorertree.ConfigReader;
 import fr.unice.polytech.pnsinnov.smartest.explorertree.PluginTechRetriever;
-import fr.unice.polytech.pnsinnov.smartest.explorertree.TreeModule;
+import fr.unice.polytech.pnsinnov.smartest.explorertree.ProjectTree;
 import fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.DefaultPlugin;
 import fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.Plugin;
 import picocli.CommandLine;
 
+import java.nio.file.Paths;
 import java.util.List;
 
 @CommandLine.Command(description = "Smartest.", name = "smartest", mixinStandardHelpOptions = true,
@@ -62,7 +63,7 @@ public class Smartest implements Runnable {
             }
         }
 
-        context.usePlugin(toUse);
+        context.useTreeModule(new ProjectTree.TreeModuleBuilder().withPlugin(toUse).withProjectBase(Paths.get("").toAbsolutePath().toString()).build());
     }
 
     CommandLine getCommandLine() {

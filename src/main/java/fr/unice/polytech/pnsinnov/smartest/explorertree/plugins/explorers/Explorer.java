@@ -7,4 +7,7 @@ public interface Explorer {
 
     List<String> findAllModules(File baseDir);
 
+    String getPathToSrc();
+
+    String getPathToTest();
 }

@@ -1,6 +1,6 @@
 package fr.unice.polytech.pnsinnov.smartest.commandline;
 
-import fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.Plugin;
+import fr.unice.polytech.pnsinnov.smartest.explorertree.ProjectTree;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -9,10 +9,10 @@ public class Context {
     private InputStream in;
     private PrintStream out;
     private PrintStream err;
-    private Plugin plugin;
+    private ProjectTree projectTree;
 
-    Context usePlugin(Plugin plugin){
-        this.plugin = plugin;
+    Context useTreeModule(ProjectTree projectTree){
+        this.projectTree = projectTree;
         return this;
     }
 
@@ -43,7 +43,7 @@ public class Context {
         return err;
     }
 
-    public Plugin getPlugin() {
-        return plugin;
+    public ProjectTree getProjectTree() {
+        return projectTree;
     }
 }

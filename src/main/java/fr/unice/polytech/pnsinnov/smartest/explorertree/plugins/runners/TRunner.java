@@ -1,10 +1,10 @@
 package fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.runners;
 
 
-import java.util.List;
+import java.util.Set;
 
 public interface TRunner {
 
-    boolean runAllTests(List<String> toRun);
+    boolean runAllTests(Set<String> toRun);
 
 }

@@ -6,5 +6,4 @@ public class MainTest {
     public void basicTest(){
         org.junit.Assert.assertFalse(false);
     }
-
 }

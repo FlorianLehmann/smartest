@@ -13,4 +13,14 @@ public class DefaultExplorer implements Explorer {
 
         return res;
     }
+
+    @Override
+    public String getPathToSrc() {
+        return "";
+    }
+
+    @Override
+    public String getPathToTest() {
+        return "";
+    }
 }

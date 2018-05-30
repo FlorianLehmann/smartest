@@ -24,6 +24,11 @@ public class SmartestTest {
         smartest = new Smartest(new Context().useIn(in).useOut(out).useErr(err));
     }
 
+    @org.junit.Test
+    public void basicTest(){
+        org.junit.Assert.assertFalse(false);
+    }
+
     @Test
     void commit() {
         boolean[] committed = {false};
