@@ -21,7 +21,7 @@ public class SmartestTest {
         outByteArray = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(outByteArray);
         PrintStream err = new PrintStream(new ByteArrayOutputStream());
-        smartest = new Smartest(new Context().useIn(in).useOut(out).useErr(err));
+        smartest = new Smartest(new Context.ContextBuilder().withInputStream(in).withOutStream(out).withErrStream(err).build());
     }
 
     @org.junit.Test
