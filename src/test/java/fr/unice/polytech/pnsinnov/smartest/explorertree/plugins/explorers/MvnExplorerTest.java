@@ -15,7 +15,7 @@ public class MvnExplorerTest {
         assertEquals(1, mvnExplorer.findAllModules(new File(Paths.get("").toAbsolutePath().toString())).size());
     }
 
-    @org.junit.Test
+    @Test
     public void basicTest(){
         org.junit.Assert.assertFalse(false);
     }
