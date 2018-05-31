@@ -1,22 +1,23 @@
 package fr.unice.polytech.pnsinnov.smartest.commandline;
 
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class SmartestTest {
     private Smartest smartest;
     private ByteArrayOutputStream outByteArray;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ByteArrayInputStream in = new ByteArrayInputStream("\n".getBytes());
         outByteArray = new ByteArrayOutputStream();

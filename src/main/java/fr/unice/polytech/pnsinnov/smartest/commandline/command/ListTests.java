@@ -57,7 +57,7 @@ public class ListTests extends Command {
 
         for (String cls:toRun) {
             Set<String> tests = Database.getInstance().getTestLinkToClass(cls);
-            if (tests!=null && !tests.isEmpty())
+            if (tests!= null && !tests.isEmpty())
                 System.out.println(tests);
         }
 

@@ -4,17 +4,16 @@ package fr.unice.polytech.pnsinnov.smartest;
 
 import fr.unice.polytech.pnsinnov.smartest.parser.Database;
 import fr.unice.polytech.pnsinnov.smartest.parser.Parser;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MappingClassTest {
 
@@ -22,7 +21,7 @@ public class MappingClassTest {
     private Database database;
     private Runtime runtime;
 
-    @Before
+    @BeforeAll
     public void defineContext() throws IOException, InterruptedException {
         database = Database.getInstance();
         runtime = Runtime.getRuntime();
@@ -57,7 +56,7 @@ public class MappingClassTest {
         assertEquals(studentLinks , database.getTestLinkToClass("fr.unice.polytech.pnsinnov.Student"));
     }
 
-    @After
+    @AfterAll
     public void cleanContext() throws IOException, InterruptedException {
         Process process = runtime.exec("rm -rf tmp");
         process.waitFor();
