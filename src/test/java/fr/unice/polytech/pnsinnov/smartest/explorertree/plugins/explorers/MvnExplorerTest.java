@@ -1,11 +1,13 @@
 package fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.explorers;
 
-import org.junit.jupiter.api.Test;
+
+
+import org.junit.Test;
 
 import java.io.File;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class MvnExplorerTest {
     @Test

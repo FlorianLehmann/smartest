@@ -2,11 +2,9 @@ package fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.runners;
 
 
 import fr.unice.polytech.pnsinnov.smartest.parser.Database;
-import org.junit.platform.engine.DiscoverySelector;
-import org.junit.platform.launcher.Launcher;
-import org.junit.platform.launcher.LauncherDiscoveryRequest;
-import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
-import org.junit.platform.launcher.core.LauncherFactory;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
+import org.junit.runner.Result;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -15,8 +13,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
 public class JUnitRunner implements TRunner{
 
@@ -44,22 +40,11 @@ public class JUnitRunner implements TRunner{
                 }
             }
 
-            for (Class cls: classes) {
-                LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                        .selectors(selectClass(cls))
-                        .build();
+            Request request = Request.classes((classes.toArray(new Class[classes.size()])));
 
-                Launcher launcher = LauncherFactory.create();
-                DiscoverySelector discoverySelector;
-                TestResultListener listener = new TestResultListener();
-                launcher.registerTestExecutionListeners(listener);
-                launcher.execute(request);
-                if (listener.getResult() == EnumTestResult.FAILED)
-                    return false;
-            }
+            Result result = new JUnitCore().run(request);
 
-            return true;
-
+            return result.wasSuccessful();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

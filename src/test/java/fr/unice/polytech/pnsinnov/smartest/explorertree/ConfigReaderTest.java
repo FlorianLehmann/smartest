@@ -2,8 +2,10 @@ package fr.unice.polytech.pnsinnov.smartest.explorertree;
 
 
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -12,7 +14,7 @@ public class ConfigReaderTest {
 
     private ConfigReader reader;
 
-    @BeforeEach
+    @Before
     public void setup(){
         reader = new ConfigReader("./resources/config.smt");
     }

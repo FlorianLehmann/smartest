@@ -1,22 +1,23 @@
 package fr.unice.polytech.pnsinnov.smartest.commandline;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import org.junit.Before;
+import org.junit.Test;
 import picocli.CommandLine;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SmartestTest {
     private Smartest smartest;
     private ByteArrayOutputStream outByteArray;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         ByteArrayInputStream in = new ByteArrayInputStream("\n".getBytes());
         outByteArray = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(outByteArray);
@@ -25,7 +26,7 @@ public class SmartestTest {
     }
 
     @Test
-    void commit() {
+    public void commit() {
         boolean[] committed = {false};
         smartest.getCommandLine().addSubcommand("commit", new FakeCommit(committed));
         smartest.parse(new String[]{"commit", "-m", "Initial commit"});

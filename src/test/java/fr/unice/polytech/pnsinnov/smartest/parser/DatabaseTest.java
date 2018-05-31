@@ -1,19 +1,21 @@
 package fr.unice.polytech.pnsinnov.smartest.parser;
 
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 
 public class DatabaseTest {
 
     private Database database;
 
-    @BeforeEach
+    @Before
     public void defineContext() {
         database = Database.getInstance();
     }
