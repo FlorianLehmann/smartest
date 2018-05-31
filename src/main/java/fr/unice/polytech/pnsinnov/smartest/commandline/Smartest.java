@@ -5,12 +5,10 @@ import fr.unice.polytech.pnsinnov.smartest.commandline.command.ListTests;
 import fr.unice.polytech.pnsinnov.smartest.commandline.command.Test;
 import fr.unice.polytech.pnsinnov.smartest.explorertree.ConfigReader;
 import fr.unice.polytech.pnsinnov.smartest.explorertree.PluginTechRetriever;
-import fr.unice.polytech.pnsinnov.smartest.explorertree.ProjectTree;
 import fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.DefaultPlugin;
 import fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.Plugin;
 import picocli.CommandLine;
 
-import java.nio.file.Paths;
 import java.util.List;
 
 @CommandLine.Command(description = "Smartest.", name = "smartest", mixinStandardHelpOptions = true,
@@ -21,12 +19,14 @@ public class Smartest implements Runnable {
 
 
     public Smartest() {
-        this(new Context().useIn(System.in).useOut(System.out).useErr(System.err));
+        this.context = new Context.ContextBuilder().withInputStream(System.in).withOutStream(System.out).withErrStream(System.err).withPlugin(configuration()).build();
+        commandLine = new CommandLine(this);
+        addContextToCommands();
     }
 
-    public Smartest(Context context) {
+    public Smartest(Context context){
         this.context = context;
-        commandLine = new CommandLine(this);
+        this.commandLine = new CommandLine(this);
         addContextToCommands();
     }
 
@@ -46,12 +46,9 @@ public class Smartest implements Runnable {
         if (!result.hasSubcommand() && !commandLine.isUsageHelpRequested()) {
             commandLine.usage(context.out());
         }
-        else {
-            configuration();
-        }
     }
 
-    private void configuration() {
+    private Plugin configuration() {
         ConfigReader reader = new ConfigReader("./resources/config.smt");
         List<Plugin> plugins = new PluginTechRetriever().retrieveAllPlugins();
         Plugin toUse = new DefaultPlugin();
@@ -63,7 +60,7 @@ public class Smartest implements Runnable {
             }
         }
 
-        context.useTreeModule(new ProjectTree.TreeModuleBuilder().withPlugin(toUse).withProjectBase(Paths.get("").toAbsolutePath().toString()).build());
+        return toUse;
     }
 
     CommandLine getCommandLine() {

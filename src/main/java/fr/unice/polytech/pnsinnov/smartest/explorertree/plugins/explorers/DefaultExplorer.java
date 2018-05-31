@@ -15,12 +15,12 @@ public class DefaultExplorer implements Explorer {
     }
 
     @Override
-    public String getPathToSrc() {
+    public String getPathToSrc(String currentModule) {
         return "";
     }
 
     @Override
-    public String getPathToTest() {
+    public String getPathToTest(String currentModule) {
         return "";
     }
 }

@@ -9,6 +9,8 @@ public class MvnExplorer implements Explorer {
 
     private String pom = "/pom.xml";
     private String srcDir = "/src";
+    private String defaultSrc = "src/main/java";
+    private String defaultTest = "src/test/java";
 
     @Override
     public List<String> findAllModules(File baseDir) {
@@ -34,14 +36,14 @@ public class MvnExplorer implements Explorer {
     }
 
     @Override
-    public String getPathToSrc() {
+    public String getPathToSrc(String currentModule) {
         //TODO PARSER LE POM.XML ?
-        return "src/main/java";
+        return defaultSrc;
     }
 
     @Override
-    public String getPathToTest() {
+    public String getPathToTest(String currentModule) {
         //TODO PARSER LE POM.XML ?
-        return "src/test/java";
+        return defaultTest;
     }
 }
