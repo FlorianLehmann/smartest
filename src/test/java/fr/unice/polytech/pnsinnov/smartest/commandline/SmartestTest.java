@@ -25,11 +25,6 @@ public class SmartestTest {
     }
 
     @Test
-    public void basicTest(){
-        org.junit.Assert.assertFalse(false);
-    }
-
-    @Test
     void commit() {
         boolean[] committed = {false};
         smartest.getCommandLine().addSubcommand("commit", new FakeCommit(committed));
