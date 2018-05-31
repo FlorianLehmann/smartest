@@ -19,8 +19,8 @@ import java.util.Set;
 
 @CommandLine.Command(name = "test", description = "Run tests on the selected scope.")
 public class Test extends Command {
-    @CommandLine.Option(names = {"-s", "--scope"}, required = true, description = "Module, Class, ...")
-    private String scope;
+    @CommandLine.Option(names = {"-s", "--scope"}, description = "Module, Class, ...")
+    private String scope = "Class";
 
     @Override
     public void run() {
