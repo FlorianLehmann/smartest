@@ -7,6 +7,7 @@ import fr.unice.polytech.pnsinnov.smartest.parser.Parser;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
 import java.util.HashSet;
