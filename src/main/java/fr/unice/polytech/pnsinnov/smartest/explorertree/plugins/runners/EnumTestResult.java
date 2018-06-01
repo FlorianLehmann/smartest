@@ -1,7 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.explorertree.plugins.runners;
 
 public enum EnumTestResult {
-    SUCCESSFUL("SUCCESFUL"),
+    SUCCESSFUL("SUCCESSFUL"),
     FAILED("FAILED");
 
     private String result;
