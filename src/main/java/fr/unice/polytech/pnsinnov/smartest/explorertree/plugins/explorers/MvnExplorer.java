@@ -48,12 +48,12 @@ public class MvnExplorer implements Explorer {
         try {
             Model model = reader.read(new FileReader(new File(Paths.get(currentModule).toAbsolutePath().toString() + pom)));
 
-            if(model.getBuild() == null || model.getBuild().getSourceDirectory() == null || model.getProperties() == null){
+            if(model.getBuild() == null || model.getBuild().getSourceDirectory() == null) {
                 return defaultSrc;
             } else if (model.getBuild().getSourceDirectory().startsWith("${")){
                 return model.getProperties().getProperty(model.getBuild().getSourceDirectory().split("\\$\\{")[1].split("}")[0]);
             } else {
-                return model.getProperties().getProperty(model.getBuild().getSourceDirectory());
+                return model.getBuild().getSourceDirectory();
             }
         } catch (IOException | XmlPullParserException e) {
             return defaultSrc;

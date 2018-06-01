@@ -15,6 +15,7 @@
         <compiler.target>1.8</compiler.target>
         <junit.version>5.0.3</junit.version>
         <tests.directory>src/test/java</tests.directory>
+        <src.directory>this/is/src</src.directory>
     </properties>
 
     <dependencies>
@@ -81,12 +82,7 @@
 
     <build>
         <testSourceDirectory>${tests.directory}</testSourceDirectory>
-
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-            </testResource>
-        </testResources>
+        <sourceDirectory>${src.directory}</sourceDirectory>
 
         <plugins>
             <plugin>

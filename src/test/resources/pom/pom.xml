@@ -81,12 +81,7 @@
 
     <build>
         <testSourceDirectory>${tests.directory}</testSourceDirectory>
-
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-            </testResource>
-        </testResources>
+        <sourceDirectory>here/i/am</sourceDirectory>
 
         <plugins>
             <plugin>
