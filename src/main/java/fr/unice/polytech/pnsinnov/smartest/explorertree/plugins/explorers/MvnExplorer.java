@@ -48,7 +48,7 @@ public class MvnExplorer implements Explorer {
         try {
             Model model = reader.read(new FileReader(new File(Paths.get(currentModule).toAbsolutePath().toString() + pom)));
 
-            if(model.getBuild().getSourceDirectory() == null){
+            if(model.getBuild() == null || model.getBuild().getSourceDirectory() == null || model.getProperties() == null){
                 return defaultSrc;
             } else if (model.getBuild().getSourceDirectory().startsWith("${")){
                 return model.getProperties().getProperty(model.getBuild().getSourceDirectory().split("\\$\\{")[1].split("}")[0]);
@@ -66,7 +66,7 @@ public class MvnExplorer implements Explorer {
         try {
             Model model = reader.read(new FileReader(new File(Paths.get(currentModule).toAbsolutePath().toString() + pom)));
 
-            if(model.getBuild().getTestSourceDirectory() == null){
+            if(model.getBuild() == null || model.getBuild().getTestSourceDirectory() == null || model.getProperties() == null){
                 return defaultTest;
             } else if (model.getBuild().getTestSourceDirectory().startsWith("${")){
                 return model.getProperties().getProperty(model.getBuild().getTestSourceDirectory().split("\\$\\{")[1].split("}")[0]);
