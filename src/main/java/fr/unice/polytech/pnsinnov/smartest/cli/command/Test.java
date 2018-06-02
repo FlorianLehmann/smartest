@@ -1,6 +1,6 @@
 package fr.unice.polytech.pnsinnov.smartest.cli.command;
 
-import fr.unice.polytech.pnsinnov.smartest.commandline.Command;
+import fr.unice.polytech.pnsinnov.smartest.cli.Command;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "test", description = "Run tests on the selected scope.")
@@ -10,5 +10,6 @@ public class Test extends Command {
 
     @Override
     public void run() {
+        context.smartest().test(scope);
     }
 }

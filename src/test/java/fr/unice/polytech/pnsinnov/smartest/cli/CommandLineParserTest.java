@@ -1,6 +1,6 @@
 package fr.unice.polytech.pnsinnov.smartest.cli;
 
-import fr.unice.polytech.pnsinnov.smartest.commandline.Context;
+import fr.unice.polytech.pnsinnov.smartest.Context;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
@@ -53,7 +53,7 @@ class CommandLineParserTest {
     }
 
     @Test
-    void ListTestNoScope() {
+    void listTestNoScope() {
         mockedListTests.expected = "Class";
         commandLineParser.parse("list-tests");
         assertEquals(true, commandDone.get("list-tests"));

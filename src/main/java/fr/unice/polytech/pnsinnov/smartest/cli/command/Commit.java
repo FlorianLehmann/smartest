@@ -1,6 +1,6 @@
 package fr.unice.polytech.pnsinnov.smartest.cli.command;
 
-import fr.unice.polytech.pnsinnov.smartest.commandline.Command;
+import fr.unice.polytech.pnsinnov.smartest.cli.Command;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "commit", description = "Run tests then record changes to the repository.")
@@ -13,5 +13,6 @@ public class Commit extends Command {
     private String scope = "Class";
 
     public void run() {
+        context.smartest().commit(scope, message);
     }
 }

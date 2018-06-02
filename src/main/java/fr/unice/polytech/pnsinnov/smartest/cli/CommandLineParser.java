@@ -1,10 +1,10 @@
 package fr.unice.polytech.pnsinnov.smartest.cli;
 
-import fr.unice.polytech.pnsinnov.smartest.commandline.Command;
-import fr.unice.polytech.pnsinnov.smartest.commandline.Context;
-import fr.unice.polytech.pnsinnov.smartest.commandline.command.Commit;
-import fr.unice.polytech.pnsinnov.smartest.commandline.command.ListTests;
-import fr.unice.polytech.pnsinnov.smartest.commandline.command.Test;
+import fr.unice.polytech.pnsinnov.smartest.Smartest;
+import fr.unice.polytech.pnsinnov.smartest.Context;
+import fr.unice.polytech.pnsinnov.smartest.cli.command.Commit;
+import fr.unice.polytech.pnsinnov.smartest.cli.command.ListTests;
+import fr.unice.polytech.pnsinnov.smartest.cli.command.Test;
 import picocli.CommandLine;
 
 import java.util.List;
@@ -15,15 +15,16 @@ public class CommandLineParser implements Runnable {
     private final CommandLine commandLine;
     private final Context context;
 
-    public CommandLineParser() {
+    public CommandLineParser(Smartest smartest) {
         this(new Context.ContextBuilder()
+                .withSmartest(smartest)
                 .withInputStream(System.in)
                 .withOutStream(System.out)
                 .withErrStream(System.err)
                 .build());
     }
 
-    CommandLineParser(Context context) {
+    public CommandLineParser(Context context) {
         this.context = context;
         this.commandLine = new CommandLine(this);
         addContextToCommands();
