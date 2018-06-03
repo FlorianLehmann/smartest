@@ -1,13 +1,13 @@
 package fr.unice.polytech.pnsinnov.smartest;
 
-import fr.unice.polytech.pnsinnov.smartest.commandline.Smartest;
-import fr.unice.polytech.pnsinnov.smartest.parser.Database;
+import fr.unice.polytech.pnsinnov.smartest.cli.CommandLineParser;
+import fr.unice.polytech.pnsinnov.smartest.configuration.ConfigReader;
+import fr.unice.polytech.pnsinnov.smartest.configuration.DefaultConfigReader;
 
 public class Main {
     public static void main(String[] args) {
-        new Smartest().parse(args);
-        int a = 0;
-        Database database;
-        a = a + 1;
+        ConfigReader configReader = new DefaultConfigReader();
+        CommandLineParser commandLineParser = new CommandLineParser(configReader);
+        commandLineParser.parse(args);
     }
 }

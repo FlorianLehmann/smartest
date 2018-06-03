@@ -78,12 +78,10 @@
             <artifactId>junit-jupiter-params</artifactId>
             <version>${junit.version}</version>
         </dependency>
-
-        <!-- refactor dependencies -->
         <dependency>
-            <groupId>fr.smartest</groupId>
-            <artifactId>plugin</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.11</version>
         </dependency>
         <dependency>
             <groupId>com.github.javaparser</groupId>
