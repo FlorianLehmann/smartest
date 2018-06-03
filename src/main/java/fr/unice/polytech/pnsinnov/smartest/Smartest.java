@@ -1,25 +1,35 @@
 package fr.unice.polytech.pnsinnov.smartest;
 
+import fr.smartest.exceptions.CommitFailureException;
+import fr.smartest.plugin.Language;
 import fr.smartest.plugin.Test;
 import fr.smartest.plugin.TestReport;
+import fr.unice.polytech.pnsinnov.smartest.configuration.Configuration;
+import fr.unice.polytech.pnsinnov.smartest.plugin.PluginLoader;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Smartest {
-    public List<Test> listTests(String scope) {
-        // language.getTestsRelatedToChanges(scope);
-        return new ArrayList<>();
+    private final PluginLoader pluginLoader;
+
+    public Smartest(Configuration configuration) {
+        pluginLoader = new PluginLoader(configuration);
     }
-    
-    public void commit(String scope, String message) {
+
+    public Set<Test> listTests(String scope) {
+        Language language = pluginLoader.language();
+        language.setUp(pluginLoader.productionTool().getModules());
+        return language.getTestsRelatedToChanges();
+    }
+
+    public void commit(String scope, String message) throws CommitFailureException {
         if (test(scope).stream().allMatch(testReport -> testReport.getResult() == TestReport.Status.SUCESSFUL)) {
-            // cvs.commit(message);
+            pluginLoader.vcs().commit(message);
         }
     }
 
     public List<TestReport> test(String scope) {
-        // testframework.runTest(listTests(scope);
-        return new ArrayList<>();
+        return pluginLoader.testFramework().Run(listTests(scope));
     }
 }
