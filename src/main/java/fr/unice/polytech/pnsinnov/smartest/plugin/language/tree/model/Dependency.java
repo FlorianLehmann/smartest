@@ -1,6 +1,8 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model;
 
-public class Dependency {
+import java.io.Serializable;
+
+public class Dependency implements Serializable {
 
     private String name;
 

@@ -3,11 +3,12 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model;
 
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.persistence.Database;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Class {
+public class Class implements Serializable {
 
     private String name;
     private List<Method> methods;

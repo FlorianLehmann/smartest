@@ -16,6 +16,7 @@ import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.factory.solver.J
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Class;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Dependency;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Method;
+import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Tree;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.persistence.Database;
 
 import java.io.File;
@@ -51,9 +52,9 @@ public class TreeFactory {
 
                 lookForDependencyInsideMethod(cu, cls);
 
-                fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.File file = new fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.File(cls);
+                Tree file = new Tree(cls);
 
-                Database.getInstance().addFile(path, file);
+                Database.getInstance().addFile(path.toString(), file);
 
             });
 
@@ -64,7 +65,7 @@ public class TreeFactory {
     }
 
     private void refineDependency() {
-        for (Path test : Database.getInstance().getTree().keySet()) {
+        for (String test : Database.getInstance().getTree().keySet()) {
             Database.getInstance().getTree().get(test).getCls().refineDependency();
         }
 
