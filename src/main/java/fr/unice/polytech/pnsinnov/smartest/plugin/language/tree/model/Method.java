@@ -2,10 +2,11 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model;
 
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.persistence.Database;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Method {
+public class Method implements Serializable {
 
     private String name;
     private Set<Dependency> dependencies;

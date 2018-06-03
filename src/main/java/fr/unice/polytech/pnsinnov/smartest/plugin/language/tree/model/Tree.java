@@ -1,10 +1,12 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model;
 
-public class File {
+import java.io.Serializable;
+
+public class Tree implements Serializable {
 
     private Class cls;
 
-    public File(Class cls) {
+    public Tree(Class cls) {
         this.cls = cls;
     }
 
