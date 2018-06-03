@@ -10,7 +10,7 @@ public class ListTests extends Command {
     private String scope = "Class";
 
     public void run() {
-        for (Test test : context.smartest().listTests(scope)) {
+        for (Test test : smartest.listTests(scope)) {
             context.out().println(test.getIdentifier());
         }
     }

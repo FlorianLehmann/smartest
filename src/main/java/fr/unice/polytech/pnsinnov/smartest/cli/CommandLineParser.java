@@ -1,10 +1,11 @@
 package fr.unice.polytech.pnsinnov.smartest.cli;
 
-import fr.unice.polytech.pnsinnov.smartest.Smartest;
 import fr.unice.polytech.pnsinnov.smartest.Context;
+import fr.unice.polytech.pnsinnov.smartest.Smartest;
 import fr.unice.polytech.pnsinnov.smartest.cli.command.Commit;
 import fr.unice.polytech.pnsinnov.smartest.cli.command.ListTests;
 import fr.unice.polytech.pnsinnov.smartest.cli.command.Test;
+import fr.unice.polytech.pnsinnov.smartest.configuration.ConfigReader;
 import picocli.CommandLine;
 
 import java.util.List;
@@ -14,18 +15,22 @@ import java.util.List;
 public class CommandLineParser implements Runnable {
     private final CommandLine commandLine;
     private final Context context;
+    private final ConfigReader configReader;
 
-    public CommandLineParser(Smartest smartest) {
-        this(new Context.ContextBuilder()
-                .withSmartest(smartest)
+    @CommandLine.Option(names = {"--config-path"}, description = "Set path to config.smt file.")
+    private String configPath = "resources/config.smt";
+
+    public CommandLineParser(ConfigReader configReader) {
+        this(configReader, new Context.ContextBuilder()
                 .withInputStream(System.in)
                 .withOutStream(System.out)
                 .withErrStream(System.err)
                 .build());
     }
 
-    public CommandLineParser(Context context) {
+    public CommandLineParser(ConfigReader configReader, Context context) {
         this.context = context;
+        this.configReader = configReader;
         this.commandLine = new CommandLine(this);
         addContextToCommands();
     }
@@ -36,7 +41,13 @@ public class CommandLineParser implements Runnable {
         }
     }
 
-    void addSubCommand(String name, Runnable command) {
+    private void addSmartestToCommands(Smartest smartest) {
+        for (CommandLine cmd : commandLine.getSubcommands().values()) {
+            cmd.<Command>getCommand().setSmartest(smartest);
+        }
+    }
+
+    void addSubCommand(String name, Command command) {
         commandLine.addSubcommand(name, command);
     }
 
@@ -49,6 +60,8 @@ public class CommandLineParser implements Runnable {
 
     public void run() {
         CommandLine.ParseResult result = commandLine.getParseResult();
+        Smartest smartest = new Smartest(configReader.readConfig(configPath));
+        addSmartestToCommands(smartest);
         if (!result.hasSubcommand() && !commandLine.isUsageHelpRequested()) {
             commandLine.usage(context.out());
         }

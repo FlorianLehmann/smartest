@@ -1,6 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.cli;
 
 import fr.unice.polytech.pnsinnov.smartest.Context;
+import fr.unice.polytech.pnsinnov.smartest.configuration.Configuration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
@@ -28,7 +29,7 @@ class CommandLineParserTest {
         PrintStream out = new PrintStream(outByteArray);
         PrintStream err = new PrintStream(new ByteArrayOutputStream());
         Context context = new Context.ContextBuilder().withInputStream(in).withOutStream(out).withErrStream(err).build();
-        commandLineParser = new CommandLineParser(context);
+        commandLineParser = new CommandLineParser(path -> new MockedConfig(), context);
 
         commandDone = new HashMap<>();
         commandDone.put("list-tests", false);
@@ -112,7 +113,7 @@ class CommandLineParserTest {
     }
 
     @CommandLine.Command(name = "commit", description = "Mock the commit feature")
-    private class MockedCommit implements Runnable {
+    private class MockedCommit extends Command {
         @CommandLine.Option(names = {"-m", "--message"}, required = true, description = "Put an useless message here")
         private String message;
 
@@ -129,7 +130,7 @@ class CommandLineParserTest {
     }
 
     @CommandLine.Command(name = "test", description = "Mock the test feature")
-    private class MockedTest implements Runnable {
+    private class MockedTest extends Command {
         @CommandLine.Option(names = {"-s", "--scope"}, description = "Module, Class, ...")
         private String scope = "Class";
         private String expected;
@@ -142,7 +143,7 @@ class CommandLineParserTest {
     }
 
     @CommandLine.Command(name = "list-tests", description = "Mock the list-tests feature")
-    private class MockedListTests implements Runnable {
+    private class MockedListTests extends Command {
         @CommandLine.Option(names = {"-s", "--scope"}, description = "Module, Class, ...")
         private String scope = "Class";
         private String expected;
@@ -151,6 +152,38 @@ class CommandLineParserTest {
         public void run() {
             commandDone.put("list-tests", true);
             assertEquals(expected, scope);
+        }
+    }
+
+    private class MockedConfig implements Configuration {
+        @Override
+        public String gitPath() {
+            return "";
+        }
+
+        @Override
+        public String projectPath() {
+            return "";
+        }
+
+        @Override
+        public String language() {
+            return "";
+        }
+
+        @Override
+        public String productionTool() {
+            return "";
+        }
+
+        @Override
+        public String testFramework() {
+            return "";
+        }
+
+        @Override
+        public String vcs() {
+            return "";
         }
     }
 }

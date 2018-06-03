@@ -10,6 +10,6 @@ public class Test extends Command {
 
     @Override
     public void run() {
-        context.smartest().test(scope);
+        smartest.test(scope);
     }
 }
