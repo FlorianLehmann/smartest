@@ -1,6 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.cli.command;
 
 import fr.smartest.exceptions.CommitFailureException;
+import fr.smartest.exceptions.PluginException;
 import fr.unice.polytech.pnsinnov.smartest.cli.Command;
 import picocli.CommandLine;
 
@@ -21,6 +22,10 @@ public class Commit extends Command {
         catch (CommitFailureException e) {
             context.out().print("Changes has not been committed due to: ");
             context.out().println(e.getMessage());
+        }
+        catch (PluginException e) {
+            context.err().print("An error occurred: ");
+            context.err().println(e.getMessage());
         }
     }
 }

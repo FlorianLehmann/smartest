@@ -1,5 +1,6 @@
 package fr.unice.polytech.pnsinnov.smartest.cli.command;
 
+import fr.smartest.exceptions.PluginException;
 import fr.smartest.plugin.Test;
 import fr.unice.polytech.pnsinnov.smartest.cli.Command;
 import picocli.CommandLine;
@@ -10,8 +11,14 @@ public class ListTests extends Command {
     private String scope = "Class";
 
     public void run() {
-        for (Test test : smartest.listTests(scope)) {
-            context.out().println(test.getIdentifier());
+        try {
+            for (Test test : smartest.listTests(scope)) {
+                context.out().println(test.getIdentifier());
+            }
+        }
+        catch (PluginException e) {
+            context.err().print("An error occurred: ");
+            context.err().println(e.getMessage());
         }
     }
 }
