@@ -28,11 +28,15 @@ public class CommandLineParser implements Runnable {
                 .build());
     }
 
-    public CommandLineParser(ConfigReader configReader, Context context) {
+    CommandLineParser(ConfigReader configReader, Context context) {
         this.context = context;
         this.configReader = configReader;
         this.commandLine = new CommandLine(this);
         addContextToCommands();
+    }
+
+    String getConfigPath() {
+        return configPath;
     }
 
     private void addContextToCommands() {

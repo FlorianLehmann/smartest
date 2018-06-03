@@ -1,7 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.cli;
 
 import fr.unice.polytech.pnsinnov.smartest.Context;
-import fr.unice.polytech.pnsinnov.smartest.configuration.Configuration;
+import fr.unice.polytech.pnsinnov.smartest.configuration.DefaultConfigReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
@@ -12,7 +12,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CommandLineParserTest {
     private CommandLineParser commandLineParser;
@@ -28,8 +28,9 @@ class CommandLineParserTest {
         outByteArray = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(outByteArray);
         PrintStream err = new PrintStream(new ByteArrayOutputStream());
-        Context context = new Context.ContextBuilder().withInputStream(in).withOutStream(out).withErrStream(err).build();
-        commandLineParser = new CommandLineParser(path -> new MockedConfig(), context);
+        Context context = new Context.ContextBuilder().withInputStream(in).withOutStream(out).withErrStream(err)
+                .build();
+        commandLineParser = new CommandLineParser(new DefaultConfigReader(), context);
 
         commandDone = new HashMap<>();
         commandDone.put("list-tests", false);
@@ -48,9 +49,16 @@ class CommandLineParserTest {
     @Test
     void noArgument() {
         commandLineParser.parse();
+        assertEquals("resources/config.smt", commandLineParser.getConfigPath());
         assertEquals(false, commandDone.get("list-tests"));
         assertEquals(false, commandDone.get("test"));
         assertEquals(false, commandDone.get("commit"));
+    }
+
+    @Test
+    void changeConfigPath() {
+        commandLineParser.parse("--config-path", "config.json");
+        assertEquals("config.json", commandLineParser.getConfigPath());
     }
 
     @Test
@@ -152,38 +160,6 @@ class CommandLineParserTest {
         public void run() {
             commandDone.put("list-tests", true);
             assertEquals(expected, scope);
-        }
-    }
-
-    private class MockedConfig implements Configuration {
-        @Override
-        public String gitPath() {
-            return "";
-        }
-
-        @Override
-        public String projectPath() {
-            return "";
-        }
-
-        @Override
-        public String language() {
-            return "";
-        }
-
-        @Override
-        public String productionTool() {
-            return "";
-        }
-
-        @Override
-        public String testFramework() {
-            return "";
-        }
-
-        @Override
-        public String vcs() {
-            return "";
         }
     }
 }
