@@ -31,6 +31,12 @@ import java.util.Set;
 
 public class TreeFactory {
 
+    private List<Tree> trees;
+
+    public TreeFactory(List<Tree> trees) {
+        this.trees = trees;
+    }
+
     public void generateTrees(List<File> files) throws IOException {
 
         List<Path> javaFiles = convertFilesToPath(files);
@@ -52,9 +58,9 @@ public class TreeFactory {
 
                 lookForDependencyInsideMethod(cu, cls);
 
-                Tree file = new Tree(cls);
+                Tree file = new Tree(cls, path);
 
-                Database.getInstance().addFile(path.toString(), file);
+                trees.add(file);
 
             });
 
@@ -65,8 +71,8 @@ public class TreeFactory {
     }
 
     private void refineDependency() {
-        for (String test : Database.getInstance().getTree().keySet()) {
-            Database.getInstance().getTree().get(test).getCls().refineDependency();
+        for (Tree tree : trees) {
+            tree.getCls().refineDependency();
         }
 
     }

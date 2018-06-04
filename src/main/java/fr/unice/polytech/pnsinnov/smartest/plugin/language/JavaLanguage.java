@@ -3,20 +3,21 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.language;
 import fr.smartest.plugin.Language;
 import fr.smartest.plugin.Module;
 import fr.smartest.plugin.Test;
+import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.Diff;
+import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.DiffFactory;
+import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.InvalidScopeTests;
+import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.Scope;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.factory.TreeFactory;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.persistence.Database;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class JavaLanguage implements Language {
-
-
-
-
 
     @Override
     public void setUp(List<Module> modules) {
@@ -29,31 +30,47 @@ public class JavaLanguage implements Language {
             }
             DirectoryExplorer directoryExplorer = new DirectoryExplorer();
             List<File> javaFiles = directoryExplorer.explore(srcDirPaths);
-            TreeFactory treeFactory = new TreeFactory();
+            TreeFactory treeFactory = new TreeFactory(Database.getInstance().getTree());
             try {
                 treeFactory.generateTrees(javaFiles);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //faire la meme chose pour les tests
 
-            throw new UnsupportedOperationException("setUp");
+            javaFiles = directoryExplorer.explore(testDirPaths);
+            treeFactory = new TreeFactory(Database.getInstance().getTests());
+            try {
+                treeFactory.generateTrees(javaFiles);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
-    public Set<Test> getTestsRelatedToChanges(String scope) {
-        throw new UnsupportedOperationException("");
-    }
-
-    @Override
-    public void update(List<String> list) {
-        throw new UnsupportedOperationException("update");
+    public Set<Test> getTestsRelatedToChanges(String scope, Set<String> fileDiff) {
+        Diff diff = null;
+        try {
+            diff = new DiffFactory(fileDiff).build(Scope.valueOf(scope));
+        } catch (InvalidScopeTests invalidScopeTests) {
+            invalidScopeTests.printStackTrace();
+            return new HashSet<>();
+        }
+        try {
+            return diff.getTestsRelatedToChanges();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new HashSet<>();
     }
 
     @Override
     public void save() {
-        throw new UnsupportedOperationException("save");
+        try {
+            Database.getInstance().save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.persistence;
 
+import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Class;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Tree;
 
 import java.io.*;
@@ -11,11 +12,12 @@ import java.util.Map;
 public class Database {
 
     private static Database instance = null;
-    private Map<String, Tree> tree;
+    private List<Tree> classes;
+    private List<Tree> tests;
     private List<String> className;
 
     private Database() {
-        tree = new HashMap<>();
+        classes = new ArrayList<>();
         className = new ArrayList<>();
     }
 
@@ -26,16 +28,16 @@ public class Database {
         return instance;
     }
 
-    public void addFile(String path, Tree file) {
-        tree.put(path, file);
+    public void addFile(Tree file) {
+        classes.add(file);
     }
 
     public void addClassName(String className) {
         this.className.add(className);
     }
 
-    public Map<String, Tree> getTree() {
-        return tree;
+    public List<Tree> getTree() {
+        return classes;
     }
 
     public List<String> getClassName() {
@@ -43,13 +45,15 @@ public class Database {
     }
 
     public void load() throws IOException, ClassNotFoundException {
-        tree = (Map<String, Tree>) read("tree.db");
+        classes = (List<Tree>) read("tree.db");
         className = (List<String>) read("classes.db");
+        tests = (List<Tree>) read("tests.db");
     }
 
     public void save() throws IOException {
-        save(tree, "trees.db");
+        save(classes, "trees.db");
         save(className, "classes.db");
+        save(className, "tests.db");
     }
 
     private void save(Object object, String name) throws IOException {
@@ -68,11 +72,16 @@ public class Database {
 
     public boolean checkExistence() {
         return new File("smartest/trees.db").exists() ||
-                new File("smartest/classes.db").exists();
+                new File("smartest/classes.db").exists() ||
+                new File("smartest/tests.db").exists();
     }
 
     public void flush() {
-        tree = new HashMap<>();
+        classes = new ArrayList<>();
         className = new ArrayList<>();
+    }
+
+    public List<Tree> getTests() {
+        return tests;
     }
 }
