@@ -48,7 +48,7 @@ public class JavaLanguage implements Language {
     }
 
     @Override
-    public Set<Test> getTestsRelatedToChanges(String scope, Set<String> fileDiff) {
+    public Set<Test> getTestsRelatedToChanges(String scope, Set<fr.smartest.plugin.Diff> fileDiff) {
         Diff diff = null;
         try {
             diff = new DiffFactory(fileDiff).build(Scope.valueOf(scope));

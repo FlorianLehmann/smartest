@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class DiffMethod implements Diff {
 
-    public DiffMethod(Set<String> fileDiff) {
+    public DiffMethod(Set<fr.smartest.plugin.Diff> fileDiff) {
         throw new UnsupportedOperationException(("le constructeur n'est pas créer"));
     }
 
