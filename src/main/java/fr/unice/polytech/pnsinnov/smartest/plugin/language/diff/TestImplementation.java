@@ -1,12 +1,12 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.diff;
 
-public class Test implements fr.smartest.plugin.Test {
+public class TestImplementation implements fr.smartest.plugin.Test {
 
 
     private Priority priority;
     private String Identifier;
 
-    public Test(String identifier) {
+    public TestImplementation(String identifier) {
         this.priority = Priority.MEDIUM;
         Identifier = identifier;
     }
