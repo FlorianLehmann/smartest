@@ -2,6 +2,7 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.vcs;
 
 
 import fr.smartest.exceptions.VCSException;
+import fr.smartest.plugin.Diff;
 import fr.smartest.plugin.VCS;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
@@ -10,6 +11,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Set;
 
 public class GitVCS implements VCS {
@@ -47,17 +49,15 @@ public class GitVCS implements VCS {
     }
 
     @Override
-    public Set<String> diff() throws VCSException {
+    public Set<Diff> diff() throws VCSException {
         Git git = null;
 
         try {
             git = Git.open(new File(Paths.get("").toAbsolutePath().toString(), ".git"));
 
-            return git.status().call().getUncommittedChanges();
+            return new HashSet<>();//git.status().call().getUncommittedChanges();
         } catch (IOException e) {
             throw new GitNotFoundException(e);
-        } catch (GitAPIException e) {
-            throw new GitException(e);
         } finally {
             if (git != null){
                 git.close();
