@@ -1,9 +1,10 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.testframework;
 
+import fr.smartest.exceptions.TestFrameworkException;
+import fr.smartest.plugin.Module;
 import fr.smartest.plugin.Test;
 import fr.smartest.plugin.TestFramework;
 import fr.smartest.plugin.TestReport;
-import fr.unice.polytech.pnsinnov.smartest.parser.Database;
 import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.launcher.Launcher;
@@ -13,6 +14,7 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,29 +27,34 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class JUnit5Runner implements TestFramework {
+
+    private List<Module> modules;
+
     @Override
-    public List<TestReport> Run(Set<Test> set) {
+    public void setUp(List<Module> list) {
+        this.modules = new ArrayList<>();
+    }
+
+    @Override
+    public List<TestReport> Run(Set<Test> set) throws TestFrameworkException {
         List<TestReport> testReports = new ArrayList<>();
 
         try {
 
-            //TODO METTRE 2 STRINGS POUR PAS AVOIR DES TRUCS EN BRUT !
-            File testPath = new File(Paths.get("target/test-classes/").toString());
-            File srcPath = new File(Paths.get("target/classes/").toString());
-            URL[] testFolder = {srcPath.toURI().toURL(), testPath.toURI().toURL()};
+            List<URL> testFolders = new ArrayList<>();
 
-            URLClassLoader urlClassLoader = new URLClassLoader(testFolder);
+            for (Module module :
+                    this.modules) {
+                testFolders.add(new File(Paths.get(module.getCompiledTestPath()).toString()).toURI().toURL());
+                testFolders.add(new File(Paths.get(module.getCompiledSrcPath()).toString()).toURI().toURL());
+            }
+            URLClassLoader urlClassLoader = new URLClassLoader(testFolders.toArray(new URL[this.modules.size()*2]));
 
             Set<Class> classes = new HashSet<>();
 
             for (Test test : set) {
-                Set<String> itOnSet = Database.getInstance().getTestLinkToClass(test.getIdentifier());
-                if (itOnSet != null) {
-                    for (String singleTest : itOnSet) {
-                        Class c = urlClassLoader.loadClass(singleTest);
-                        classes.add(c);
-                    }
-                }
+                Class c = urlClassLoader.loadClass(test.getIdentifier());
+                classes.add(c);
             }
 
             List<ClassSelector> selectors = classes.stream()
@@ -62,15 +69,15 @@ public class JUnit5Runner implements TestFramework {
             launcher.execute(request);
             listener.getSummary().printTo(new PrintWriter(System.out));
 
-            //TODO METTRE DES TESTRESULTS MAIS COMMENT ?
+            //TODO METTDRE DANS LA LIST A RETURN SAUF QUE Y4A PAS VRAIMENT MOYEN
 
         }
         catch (MalformedURLException e) {
-            e.printStackTrace();
+            throw new TestLoadException(e);
+        } catch (ClassNotFoundException e) {
+            throw new TestNotFoundException(e);
         }
-        catch (ClassNotFoundException e) {
-            System.out.println("No class found for " + e.getLocalizedMessage());
-        }
+
 
         return testReports;
     }
