@@ -55,9 +55,28 @@ public class GitVCS implements VCS {
         try {
             git = Git.open(new File(Paths.get("").toAbsolutePath().toString(), ".git"));
 
-            return new HashSet<>();//git.status().call().getUncommittedChanges();
+            HashSet<Diff> diffs = new HashSet<>();
+
+            for (String path :
+                    git.status().call().getAdded()) {
+                diffs.add(new GitDiff(path, Diff.Status.ADDED));
+            }
+
+            for (String path :
+                    git.status().call().getRemoved()) {
+                diffs.add(new GitDiff(path, Diff.Status.REMOVED));
+            }
+
+            for (String path :
+                    git.status().call().getModified()) {
+                diffs.add(new GitDiff(path, Diff.Status.MODIFIED));
+            }
+
+            return diffs;
         } catch (IOException e) {
             throw new GitNotFoundException(e);
+        } catch (GitAPIException e) {
+            throw new GitException(e);
         } finally {
             if (git != null){
                 git.close();

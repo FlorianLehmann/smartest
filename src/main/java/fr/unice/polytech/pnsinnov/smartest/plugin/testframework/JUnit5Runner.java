@@ -47,6 +47,7 @@ public class JUnit5Runner implements TestFramework {
                 testFolders.add(new File(Paths.get(module.getCompiledTestPath()).toString()).toURI().toURL());
                 testFolders.add(new File(Paths.get(module.getCompiledSrcPath()).toString()).toURI().toURL());
             }
+
             URLClassLoader urlClassLoader = new URLClassLoader(testFolders.toArray(new URL[this.modules.size() * 2]));
 
             Set<Class> classes = new HashSet<>();
