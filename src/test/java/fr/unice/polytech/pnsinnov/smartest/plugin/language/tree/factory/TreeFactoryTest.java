@@ -42,6 +42,7 @@ class TreeFactoryTest extends SuperClone {
         }
 
         assertTrue(classNames.containsAll(actualClassNames));
+        assertTrue(actualClassNames.containsAll(classNames));
     }
 
 }

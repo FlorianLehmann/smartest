@@ -51,7 +51,7 @@ public class JavaLanguage implements Language {
     public Set<Test> getTestsRelatedToChanges(String scope, Set<fr.smartest.plugin.Diff> fileDiff) {
         Diff diff = null;
         try {
-            diff = new DiffFactory(fileDiff).build(Scope.valueOf(scope));
+            diff = new DiffFactory(fileDiff).build(Scope.valueOf(scope.toLowerCase()));
         } catch (InvalidScopeTests invalidScopeTests) {
             invalidScopeTests.printStackTrace();
             return new HashSet<>();

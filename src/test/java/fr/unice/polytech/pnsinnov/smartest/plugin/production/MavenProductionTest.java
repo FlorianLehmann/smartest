@@ -7,6 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,9 +52,15 @@ public class MavenProductionTest extends SuperClone {
 
         assertEquals(srcFolder.list().length, srcOutPut.list().length);
 
-        for (int i = 0; i < srcFolder.list().length; i++) {
-            assertEquals(srcFolder.list()[i].replaceFirst(".java", ""), srcOutPut.list()[i].replace(".class", ""));
+        List<String> srcF = new ArrayList<>();
+        for (String src : srcFolder.list()) {
+            srcF.add(src.replace(".java", ".class"));
         }
+        List<String> srcO = new ArrayList<>(Arrays.asList(srcOutPut.list()));
+        System.out.println(srcF);
+        System.out.println(srcO);
+        assertTrue(srcF.containsAll(srcO));
+        assertTrue(srcO.containsAll(srcF));
 
     }
 
