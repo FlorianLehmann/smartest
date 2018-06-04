@@ -66,6 +66,11 @@ public class Database {
         return objectInputStream.readObject();
     }
 
+    public boolean checkExistence() {
+        return new File("smartest/trees.db").exists() ||
+                new File("smartest/classes.db").exists();
+    }
+
     public void flush() {
         tree = new HashMap<>();
         className = new ArrayList<>();
