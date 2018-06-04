@@ -2,6 +2,7 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.vcs;
 
 import fr.smartest.exceptions.VCSException;
 import fr.smartest.plugin.Diff;
+import fr.unice.polytech.pnsinnov.smartest.SuperClone;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterEach;
@@ -17,7 +18,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class GitVCSTest {
+class GitVCSTest extends SuperClone{
 
     private GitVCS gitVCS;
 

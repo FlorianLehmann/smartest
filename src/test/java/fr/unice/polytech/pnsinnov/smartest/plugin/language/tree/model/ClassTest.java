@@ -1,6 +1,5 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model;
 
-import fr.smartest.exceptions.LanguageException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ClassTest {
 
