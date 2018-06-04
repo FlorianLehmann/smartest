@@ -64,6 +64,6 @@ public class MavenProduction implements ProductionTool {
 
     @Override
     public boolean accept(String s) {
-        return s.equals("maven");
+        return s.equalsIgnoreCase("maven");
     }
 }

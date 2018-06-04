@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class PluginLoader {
+    private static final String PACKAGE = "fr.unice.polytech.pnsinnov.smartest.plugin";
     private static final FilenameFilter FILENAME_FILTER = new PatternFilenameFilter(".*\\.jar");
 
     static {
@@ -69,6 +70,7 @@ public class PluginLoader {
         File[] files = listJar();
         for (File jar : files) {
             Set<Class<? extends T>> classes = loadJar(jar, cls);
+            classes.addAll(loadFromSmartest(cls));
             Set<? extends T> instances = instantiateClasses(classes);
             Optional<? extends T> plugin = acceptIdentifier(instances, identifier);
             if (plugin.isPresent()) {
@@ -76,6 +78,11 @@ public class PluginLoader {
             }
         }
         throw new PluginNotFound(identifier);
+    }
+
+    private <T extends Plugin> Set<? extends Class<? extends T>> loadFromSmartest(Class<T> cls) {
+        Reflections reflections = new Reflections(PACKAGE);
+        return reflections.getSubTypesOf(cls);
     }
 
     private <T extends Plugin> Optional<T> acceptIdentifier(Set<? extends T> instances, String identifier) {
@@ -105,8 +112,8 @@ public class PluginLoader {
         File dir = new File(configuration.pluginPath());
         File[] files = dir.listFiles(FILENAME_FILTER);
         if (files == null) {
-            throw new SearchPluginException(new FileNotFoundException("Directory " + dir.getPath() + " doesn't " +
-                    "exists"));
+            throw new SearchPluginException(
+                    new FileNotFoundException("Directory " + dir.getPath() + " doesn't exists"));
         }
         return files;
     }

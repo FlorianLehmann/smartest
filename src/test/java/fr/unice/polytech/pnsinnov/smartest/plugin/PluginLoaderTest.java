@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PluginLoaderTest {
     @Test
-    void pluginPathDoesNotExist() throws PluginException {
+    void pluginPathDoesNotExist() {
         Configuration configuration = new ConfigurationHolder(null, "unknownFolder", null, null, null, null, null);
         PluginLoader pluginLoader = new PluginLoader(configuration);
         assertThrows(PluginException.class, pluginLoader::language);
@@ -78,5 +78,22 @@ class PluginLoaderTest {
         assertTrue(pluginLoader.productionTool().accept("Maven"));
         assertTrue(pluginLoader.testFramework().accept("Junit5"));
         assertTrue(pluginLoader.vcs().accept("git"));
+    }
+
+    @Test
+    void loadAllFromExampleJar() throws PluginException {
+        URL plugins = this.getClass().getClassLoader().getResource("plugins");
+        assertNotNull(plugins);
+        Configuration configuration = new ConfigurationHolder(null, plugins.getPath(), null, "Python", "Pypi",
+                "Pytest", "svn");
+        PluginLoader pluginLoader = new PluginLoader(configuration);
+        assertTrue(pluginLoader.language().accept("Python"));
+        assertTrue(pluginLoader.productionTool().accept("Pypi"));
+        assertTrue(pluginLoader.testFramework().accept("Pytest"));
+        assertTrue(pluginLoader.vcs().accept("svn"));
+        assertFalse(pluginLoader.language().accept("Java"));
+        assertFalse(pluginLoader.productionTool().accept("Maven"));
+        assertFalse(pluginLoader.testFramework().accept("Junit5"));
+        assertFalse(pluginLoader.vcs().accept("git"));
     }
 }
