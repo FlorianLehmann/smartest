@@ -16,6 +16,8 @@
         <junit.version>5.0.3</junit.version>
         <tests.directory>this/is/test</tests.directory>
         <src.directory>this/is/src</src.directory>
+        <tests.output>launch/test/here</tests.output>
+        <src.output>compiled/code/here</src.output>
     </properties>
 
     <dependencies>
@@ -83,6 +85,9 @@
     <build>
         <testSourceDirectory>${tests.directory}</testSourceDirectory>
         <sourceDirectory>${src.directory}</sourceDirectory>
+        <outputDirectory>${src.output}</outputDirectory>
+        <testOutputDirectory>${tests.output}</testOutputDirectory>
+
 
         <plugins>
             <plugin>

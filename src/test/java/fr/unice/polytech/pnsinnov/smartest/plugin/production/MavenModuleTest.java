@@ -33,4 +33,18 @@ class MavenModuleTest {
         assertEquals("this/is/test", propModule.getTestPath());
     }
 
+    @Test
+    void getCompiledSrcPath() {
+        assertEquals("just/usual/target", mixedModule.getCompiledSrcPath());
+        assertEquals("target/classes", noBuildModule.getCompiledSrcPath());
+        assertEquals("compiled/code/here", propModule.getCompiledSrcPath());
+    }
+
+    @Test
+    void getCompiledTestPath() {
+        assertEquals("launch/test/here", mixedModule.getCompiledTestPath());
+        assertEquals("target/test-classes", noBuildModule.getCompiledTestPath());
+        assertEquals("launch/test/here", propModule.getCompiledTestPath());
+    }
+
 }
