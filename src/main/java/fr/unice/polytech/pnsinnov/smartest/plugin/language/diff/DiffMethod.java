@@ -2,12 +2,16 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.language.diff;
 
 import fr.smartest.plugin.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class DiffMethod implements Diff {
 
+    private List<fr.smartest.plugin.Diff> fileDiff;
+
     public DiffMethod(Set<fr.smartest.plugin.Diff> fileDiff) {
-        throw new UnsupportedOperationException(("le constructeur n'est pas créer"));
+        this.fileDiff = new ArrayList<>();
     }
 
     @Override

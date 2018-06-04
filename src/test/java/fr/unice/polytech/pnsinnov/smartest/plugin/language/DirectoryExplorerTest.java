@@ -1,6 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language;
 
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,9 +14,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DirectoryExplorerTest {
+public class DirectoryExplorerTest {
 
-    private Runtime runtime;
     private List<String> files;
 
     @BeforeEach
@@ -26,15 +26,15 @@ class DirectoryExplorerTest {
         files.add("tmp/foo/FooBar.Java");
         files.add("tmp/foo/FooBarFoo.JAVA");
         files.add("tmp/bar/FooFooBarFoo.JAVA");
-        runtime = Runtime.getRuntime();
-        Process process = runtime.exec("mkdir -p tmp/foo/bar tmp/bar");
-        process.waitFor();
+
+        new File("tmp/foo/bar").mkdirs();
+        new File("tmp/bar").mkdirs();
+
         for (String filepath : files) {
-            process = runtime.exec("touch " + filepath);
-            process.waitFor();
+            new File(filepath).createNewFile();
         }
-        process = runtime.exec("touch tmp/foo/FooBarBar.stt");
-        process.waitFor();
+
+        new File("tmp/foo/FooBarBar.stt").createNewFile();
     }
 
     @Test
@@ -66,10 +66,11 @@ class DirectoryExplorerTest {
 
     @Test
     public void shouldNotFindJavaFile() throws InterruptedException, IOException {
-        Process process = runtime.exec("rm -rf tmp/Bar.java tmp/bar");
-        process.waitFor();
-        process = runtime.exec("rm -rf tmp/foo");
-        process.waitFor();
+
+        new File("tmp/Bar.java").delete();
+        FileUtils.deleteDirectory(new File("tmp/bar"));
+        FileUtils.deleteDirectory(new File("tmp/foo"));
+
         DirectoryExplorer directoryExplorer = new DirectoryExplorer();
         List<File> javaFiles = directoryExplorer.explore("tmp");
 
@@ -78,8 +79,8 @@ class DirectoryExplorerTest {
 
     @Test
     public void shouldHandleInvalidDirectory() throws InterruptedException, IOException {
-        Process process = runtime.exec("rm -rf tmp");
-        process.waitFor();
+        FileUtils.deleteDirectory(new File("tmp"));
+
         DirectoryExplorer directoryExplorer = new DirectoryExplorer();
         List<File> javaFiles = directoryExplorer.explore("tmp");
 
@@ -88,8 +89,6 @@ class DirectoryExplorerTest {
 
     @AfterEach
     public void cleanContext() throws IOException, InterruptedException {
-        runtime = Runtime.getRuntime();
-        Process process = runtime.exec("rm -rf tmp");
-        process.waitFor();
+        FileUtils.deleteDirectory(new File("tmp"));
     }
 }

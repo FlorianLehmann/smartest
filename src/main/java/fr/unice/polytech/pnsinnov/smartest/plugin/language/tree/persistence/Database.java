@@ -19,6 +19,7 @@ public class Database {
     private Database() {
         classes = new ArrayList<>();
         className = new ArrayList<>();
+        tests = new ArrayList<>();
     }
 
     public static Database getInstance() {

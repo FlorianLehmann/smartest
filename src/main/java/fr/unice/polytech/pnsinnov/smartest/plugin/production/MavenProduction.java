@@ -50,9 +50,9 @@ public class MavenProduction implements ProductionTool {
 
     @Override
     public void compile() throws ProductionToolException{
+
         InvocationRequest request = new DefaultInvocationRequest();
         request.setPomFile(new File(Paths.get(baseDir, "/pom.xml").toAbsolutePath().toString()));
-
         request.setGoals(Arrays.asList("clean", "test-compile", "compile"));
         request.setOutputHandler(s -> {});
         request.setBatchMode(true);

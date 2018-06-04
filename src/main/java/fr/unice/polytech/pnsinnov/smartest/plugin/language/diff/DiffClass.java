@@ -50,7 +50,12 @@ public class DiffClass implements Diff {
 
     private List<File> getFileModifiedOrAdded() {
         List<File> files = new ArrayList<>();
-        fileDiff.forEach(fileDiff -> files.add(new File(fileDiff.getPath())));
+        fileDiff.forEach(fileDiff -> {
+            if (fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.ADDED) ||
+                    fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.MODIFIED)) {
+                files.add(new File(fileDiff.getPath()));
+            }
+        });
         return files;
     }
 }
