@@ -29,8 +29,6 @@ public class MavenModule implements Module{
         if(srcPath == null){
             MavenXpp3Reader reader = new MavenXpp3Reader();
             try {
-                System.out.println(new File(this.path + PathPlugin.POM_FILE.getName()).exists());
-
                 Model model = reader.read(new FileReader(new File(this.path + PathPlugin.POM_FILE.getName())));
 
                 if(model.getBuild() == null || model.getBuild().getSourceDirectory() == null) {
@@ -50,7 +48,7 @@ public class MavenModule implements Module{
 
     @Override
     public String getTestPath() {
-        if(srcPath == null) {
+        if(testPath == null) {
             MavenXpp3Reader reader = new MavenXpp3Reader();
             try {
                 Model model = reader.read(new FileReader(new File(this.path + PathPlugin.POM_FILE.getName())));

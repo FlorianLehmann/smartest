@@ -14,7 +14,7 @@
         <compiler.source>1.8</compiler.source>
         <compiler.target>1.8</compiler.target>
         <junit.version>5.0.3</junit.version>
-        <tests.directory>src/test/java</tests.directory>
+        <tests.directory>this/is/test</tests.directory>
         <src.directory>this/is/src</src.directory>
     </properties>
 
