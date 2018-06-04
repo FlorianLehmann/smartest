@@ -14,7 +14,6 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,8 +35,8 @@ public class JUnit5Runner implements TestFramework {
     }
 
     @Override
-    public List<TestReport> Run(Set<Test> set) throws TestFrameworkException {
-        List<TestReport> testReports = new ArrayList<>();
+    public Set<TestReport> run(Set<Test> set) throws TestFrameworkException {
+        Set<TestReport> testReports = new HashSet<>();
 
         try {
 
@@ -48,7 +47,7 @@ public class JUnit5Runner implements TestFramework {
                 testFolders.add(new File(Paths.get(module.getCompiledTestPath()).toString()).toURI().toURL());
                 testFolders.add(new File(Paths.get(module.getCompiledSrcPath()).toString()).toURI().toURL());
             }
-            URLClassLoader urlClassLoader = new URLClassLoader(testFolders.toArray(new URL[this.modules.size()*2]));
+            URLClassLoader urlClassLoader = new URLClassLoader(testFolders.toArray(new URL[this.modules.size() * 2]));
 
             Set<Class> classes = new HashSet<>();
 
@@ -74,7 +73,8 @@ public class JUnit5Runner implements TestFramework {
         }
         catch (MalformedURLException e) {
             throw new TestLoadException(e);
-        } catch (ClassNotFoundException e) {
+        }
+        catch (ClassNotFoundException e) {
             throw new TestNotFoundException(e);
         }
 

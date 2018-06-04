@@ -1,13 +1,13 @@
 package fr.unice.polytech.pnsinnov.smartest;
 
 import fr.smartest.exceptions.PluginException;
-import fr.smartest.plugin.Language;
-import fr.smartest.plugin.Test;
-import fr.smartest.plugin.TestReport;
+import fr.smartest.exceptions.SmartestException;
+import fr.smartest.plugin.*;
 import fr.unice.polytech.pnsinnov.smartest.configuration.Configuration;
+import fr.unice.polytech.pnsinnov.smartest.exceptions.TestFailureException;
 import fr.unice.polytech.pnsinnov.smartest.plugin.loader.PluginLoader;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Smartest {
@@ -19,17 +19,27 @@ public class Smartest {
 
     public Set<Test> listTests(String scope) throws PluginException {
         Language language = pluginLoader.language();
-        language.setUp(pluginLoader.productionTool().getModules());
-        return language.getTestsRelatedToChanges(scope);
+        ProductionTool productionTool = pluginLoader.productionTool();
+        language.setUp(productionTool.getModules());
+        VCS vcs = pluginLoader.vcs();
+        return language.getTestsRelatedToChanges(scope, vcs.diff());
     }
 
-    public void commit(String scope, String message) throws PluginException {
-        if (test(scope).stream().allMatch(testReport -> testReport.getResult() == TestReport.Status.SUCESSFUL)) {
-            pluginLoader.vcs().commit(message);
+    public void commit(String scope, String message) throws SmartestException {
+        Set<TestReport> test = test(scope);
+        Set<TestReport> failures = new HashSet<>();
+        for (TestReport testReport : test) {
+            if (testReport.getResult() != TestReport.Status.SUCESSFUL) {
+                failures.add(testReport);
+            }
         }
+        if (!failures.isEmpty()) {
+            throw new TestFailureException(failures);
+        }
+        pluginLoader.vcs().commit(message);
     }
 
-    public List<TestReport> test(String scope) throws PluginException {
-        return pluginLoader.testFramework().Run(listTests(scope));
+    public Set<TestReport> test(String scope) throws PluginException {
+        return pluginLoader.testFramework().run(listTests(scope));
     }
 }
