@@ -16,7 +16,7 @@ public class SuperClone {
 
     @BeforeAll
     public static void cloneGit(){
-        directory = new File("resources/tmp");
+        directory = new File("src/test/resources/tmp");
         if(!directory.mkdir()){
             try {
                 FileUtils.deleteDirectory(directory);
@@ -41,7 +41,11 @@ public class SuperClone {
 
     @AfterAll
     public static void deleteAll(){
-        //FileUtils.deleteDirectory(directory);
+        try {
+            FileUtils.deleteDirectory(directory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
