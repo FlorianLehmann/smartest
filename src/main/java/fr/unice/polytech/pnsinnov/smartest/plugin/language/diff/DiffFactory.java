@@ -4,9 +4,9 @@ import java.util.Set;
 
 public class DiffFactory {
 
-    private Set<String> fileDiff;
+    private Set<fr.smartest.plugin.Diff> fileDiff;
 
-    public DiffFactory(Set<String> fileDiff) {
+    public DiffFactory(Set<fr.smartest.plugin.Diff> fileDiff) {
         this.fileDiff = fileDiff;
     }
 
