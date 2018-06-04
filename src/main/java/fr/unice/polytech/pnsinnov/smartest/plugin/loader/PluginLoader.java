@@ -52,6 +52,7 @@ public class PluginLoader {
     public ProductionTool productionTool() throws PluginException {
         if (productionTool == null) {
             productionTool = initialize(configuration.productionTool(), ProductionTool.class);
+            productionTool.setUp(configuration.projectPath());
         }
         return productionTool;
     }
@@ -59,6 +60,7 @@ public class PluginLoader {
     public VCS vcs() throws PluginException {
         if (vcs == null) {
             vcs = initialize(configuration.vcs(), VCS.class);
+            vcs.setUp(configuration.gitPath());
         }
         return vcs;
     }
