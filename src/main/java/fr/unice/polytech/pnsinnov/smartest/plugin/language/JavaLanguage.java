@@ -32,15 +32,15 @@ public class JavaLanguage implements Language {
             List<File> javaFiles = directoryExplorer.explore(srcDirPaths);
             TreeFactory treeFactory = new TreeFactory(Database.getInstance().getTree());
             try {
-                treeFactory.generateTrees(javaFiles);
+                treeFactory.generateTrees(javaFiles, javaFiles);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            javaFiles = directoryExplorer.explore(testDirPaths);
+            List<File> javaTestFiles = directoryExplorer.explore(testDirPaths);
             treeFactory = new TreeFactory(Database.getInstance().getTests());
             try {
-                treeFactory.generateTrees(javaFiles);
+                treeFactory.generateTrees(javaTestFiles, javaFiles);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -51,7 +51,7 @@ public class JavaLanguage implements Language {
     public Set<Test> getTestsRelatedToChanges(String scope, Set<fr.smartest.plugin.Diff> fileDiff) {
         Diff diff = null;
         try {
-            diff = new DiffFactory(fileDiff).build(Scope.valueOf(scope.toLowerCase()));
+            diff = new DiffFactory(fileDiff).build(Scope.valueOf(scope.toUpperCase()));
         } catch (InvalidScopeTests invalidScopeTests) {
             invalidScopeTests.printStackTrace();
             return new HashSet<>();

@@ -37,10 +37,11 @@ public class TreeFactory {
         this.trees = trees;
     }
 
-    public void generateTrees(List<File> files) throws IOException {
+    public void generateTrees(List<File> files, List<File> src) throws IOException {
 
         List<Path> javaFiles = convertFilesToPath(files);
-        defineSolver(javaFiles);
+        List<Path> javaSrcFiles = convertFilesToPath(src);
+        defineSolver(javaSrcFiles);
 
         for (Path path : javaFiles) {
 

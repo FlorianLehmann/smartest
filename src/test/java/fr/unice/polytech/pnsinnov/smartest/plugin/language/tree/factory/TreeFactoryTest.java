@@ -33,7 +33,7 @@ class TreeFactoryTest extends SuperClone {
 
     @Test
     public void shouldBuildTreesOnSimpleProject() throws IOException {
-        treeFactory.generateTrees(files);
+        treeFactory.generateTrees(files, files);
         assertEquals(3, trees.size());
 
         List<String> actualClassNames = new ArrayList<>();

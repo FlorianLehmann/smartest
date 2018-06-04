@@ -14,10 +14,10 @@ import java.util.Set;
 
 public class DiffClass implements Diff {
 
-    private List<fr.smartest.plugin.Diff> fileDiff;
+    private Set<fr.smartest.plugin.Diff> fileDiff;
 
     public DiffClass(Set<fr.smartest.plugin.Diff> fileDiff) {
-        this.fileDiff = new ArrayList<>();
+        this.fileDiff = fileDiff;
     }
 
     @Override
@@ -27,7 +27,9 @@ public class DiffClass implements Diff {
         List<Tree> oldSrcClass = database.getTree();
 
         List<Tree> newSrcClass = new ArrayList<>();
-        new TreeFactory(newSrcClass).generateTrees(getFileModifiedOrAdded());
+        new TreeFactory(newSrcClass).generateTrees(getFileModifiedOrAdded(), getFileModifiedOrAdded());
+        //WARNING il ajoute le nom dans les classes
+        // on ne différencie pas les tests du code source
 
         List<String> classNames = new ArrayList<>();
         for (Tree tree : newSrcClass) {

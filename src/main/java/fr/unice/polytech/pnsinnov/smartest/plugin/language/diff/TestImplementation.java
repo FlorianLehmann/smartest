@@ -1,5 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.diff;
 
+import java.util.Objects;
+
 public class TestImplementation implements fr.smartest.plugin.Test {
 
 
@@ -21,4 +23,18 @@ public class TestImplementation implements fr.smartest.plugin.Test {
         return null;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TestImplementation that = (TestImplementation) o;
+        return priority == that.priority &&
+                Objects.equals(Identifier, that.Identifier);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(priority, Identifier);
+    }
 }
