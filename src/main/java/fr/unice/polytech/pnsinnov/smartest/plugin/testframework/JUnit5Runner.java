@@ -84,6 +84,6 @@ public class JUnit5Runner implements TestFramework {
 
     @Override
     public boolean accept(String s) {
-        return s.equals("junit5");
+        return s.equalsIgnoreCase("junit5");
     }
 }
