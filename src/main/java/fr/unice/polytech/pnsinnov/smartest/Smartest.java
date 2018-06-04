@@ -40,6 +40,7 @@ public class Smartest {
     }
 
     public Set<TestReport> test(String scope) throws PluginException {
-        return pluginLoader.testFramework().run(listTests(scope));
+        TestFramework testFramework = pluginLoader.testFramework();
+        return testFramework.run(listTests(scope));
     }
 }
