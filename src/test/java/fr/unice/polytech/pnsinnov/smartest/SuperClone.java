@@ -1,22 +1,28 @@
 package fr.unice.polytech.pnsinnov.smartest;
 
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
 import java.io.File;
+import java.io.IOException;
 
 public class SuperClone {
 
-    private static File directory;
+    public static File directory;
 
     @BeforeAll
     public static void cloneGit(){
-        directory = new File("tmp");
+        directory = new File("resources/tmp");
         if(!directory.mkdir()){
-            deleteFolder(directory);
+            try {
+                FileUtils.deleteDirectory(directory);
+            } catch (IOException e) {
+                //Oopses
+            }
         }
 
         Git git = null;
@@ -33,23 +39,9 @@ public class SuperClone {
 
     }
 
-    private static void deleteFolder(File folder) {
-        File[] files = folder.listFiles();
-        if(files != null) {
-            for(File f: files) {
-                if(f.isDirectory()) {
-                    deleteFolder(f);
-                } else {
-                    f.delete();
-                }
-            }
-        }
-        folder.delete();
-    }
-
     @AfterAll
     public static void deleteAll(){
-        deleteFolder(directory);
+        //FileUtils.deleteDirectory(directory);
     }
 
 }
