@@ -43,10 +43,8 @@ public class JSONConfigReader implements ConfigReader{
             fileReader.close();
 
             return res;
-        } catch (IOException |ParseException e) {
-            e.printStackTrace();
+        } catch (ParseException | IOException e) {
+            return new JSONObject();
         }
-
-        return new JSONObject();
     }
 }

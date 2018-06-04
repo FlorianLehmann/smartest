@@ -20,7 +20,7 @@ public class Smartest {
     public Set<Test> listTests(String scope) throws PluginException {
         Language language = pluginLoader.language();
         language.setUp(pluginLoader.productionTool().getModules());
-        return language.getTestsRelatedToChanges();
+        return language.getTestsRelatedToChanges(scope);
     }
 
     public void commit(String scope, String message) throws PluginException {
