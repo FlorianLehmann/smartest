@@ -68,11 +68,14 @@ public class PluginLoader {
 
     private <T extends Plugin> T initialize(String identifier, Class<T> cls) throws PluginException {
         File[] files = listJar();
+        Set<Class<? extends T>> classes = loadFromSmartest(cls);
+        Optional<? extends T> plugin = processClasses(classes, identifier);
+        if (plugin.isPresent()) {
+            return plugin.get();
+        }
         for (File jar : files) {
-            Set<Class<? extends T>> classes = loadJar(jar, cls);
-            classes.addAll(loadFromSmartest(cls));
-            Set<? extends T> instances = instantiateClasses(classes);
-            Optional<? extends T> plugin = acceptIdentifier(instances, identifier);
+            classes = loadJar(jar, cls);
+            plugin = processClasses(classes, identifier);
             if (plugin.isPresent()) {
                 return plugin.get();
             }
@@ -80,7 +83,13 @@ public class PluginLoader {
         throw new PluginNotFound(identifier);
     }
 
-    private <T extends Plugin> Set<? extends Class<? extends T>> loadFromSmartest(Class<T> cls) {
+    private <T extends Plugin> Optional<? extends T> processClasses(Set<Class<? extends T>> classes, String identifier)
+            throws PluginException {
+        Set<? extends T> instances = instantiateClasses(classes);
+        return acceptIdentifier(instances, identifier);
+    }
+
+    private <T extends Plugin> Set<Class<? extends T>> loadFromSmartest(Class<T> cls) {
         Reflections reflections = new Reflections(PACKAGE);
         return reflections.getSubTypesOf(cls);
     }

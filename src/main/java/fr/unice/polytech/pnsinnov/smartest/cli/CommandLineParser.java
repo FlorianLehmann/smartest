@@ -18,7 +18,7 @@ public class CommandLineParser implements Runnable {
     private final ConfigReader configReader;
 
     @CommandLine.Option(names = {"--config-path"}, description = "Set path to config.smt file.")
-    private String configPath = "resources/config.smt";
+    private String configPath = "config.smt";
 
     public CommandLineParser(ConfigReader configReader) {
         this(configReader, new Context.ContextBuilder()

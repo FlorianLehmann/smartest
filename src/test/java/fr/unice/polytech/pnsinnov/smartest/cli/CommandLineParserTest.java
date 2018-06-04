@@ -49,7 +49,7 @@ class CommandLineParserTest {
     @Test
     void noArgument() {
         commandLineParser.parse();
-        assertEquals("resources/config.smt", commandLineParser.getConfigPath());
+        assertEquals("config.smt", commandLineParser.getConfigPath());
         assertEquals(false, commandDone.get("list-tests"));
         assertEquals(false, commandDone.get("test"));
         assertEquals(false, commandDone.get("commit"));

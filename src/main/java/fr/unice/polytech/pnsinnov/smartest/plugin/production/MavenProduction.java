@@ -56,7 +56,6 @@ public class MavenProduction implements ProductionTool {
         request.setGoals(Arrays.asList("clean", "test-compile", "compile"));
         request.setOutputHandler(s -> {});
         request.setBatchMode(true);
-
         Invoker invoker = new DefaultInvoker();
         try {
             invoker.execute(request);

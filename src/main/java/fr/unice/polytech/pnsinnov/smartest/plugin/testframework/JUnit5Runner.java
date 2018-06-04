@@ -5,86 +5,99 @@ import fr.smartest.plugin.Module;
 import fr.smartest.plugin.Test;
 import fr.smartest.plugin.TestFramework;
 import fr.smartest.plugin.TestReport;
-import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.File;
-import java.io.PrintWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class JUnit5Runner implements TestFramework {
-
+    private static final String IDENTIFIER = "Junit5";
+    private String path;
     private List<Module> modules;
 
     @Override
-    public void setUp(List<Module> list) {
-        this.modules = new ArrayList<>();
+    public void setUp(String path, List<Module> modules) {
+        this.path = path;
+        this.modules = modules;
+    }
+
+    private URL[] getModulesURL() {
+        Set<URL> sources = new HashSet<>();
+        for (Module module : this.modules) {
+            try {
+                Path s = Paths.get(this.path, module.getCompiledSrcPath());
+                Path t = Paths.get(this.path, module.getCompiledTestPath());
+                sources.add(new File(s.toString()).toURI().toURL());
+                sources.add(new File(t.toString()).toURI().toURL());
+            }
+            catch (MalformedURLException e) {
+
+            }
+        }
+        return sources.toArray(new URL[0]);
     }
 
     @Override
-    public Set<TestReport> run(Set<Test> set) throws TestFrameworkException {
+    public Set<TestReport> run(Set<Test> tests) throws TestFrameworkException {
         Set<TestReport> testReports = new HashSet<>();
-
-        try {
-
-            List<URL> testFolders = new ArrayList<>();
-
-            for (Module module :
-                    this.modules) {
-                testFolders.add(new File(Paths.get(module.getCompiledTestPath()).toString()).toURI().toURL());
-                testFolders.add(new File(Paths.get(module.getCompiledSrcPath()).toString()).toURI().toURL());
+        List<Test> sortedByPriority = tests.stream().sorted(this::compare).collect(Collectors.toList());
+        URL[] urls = getModulesURL();
+        try (URLClassLoader urlClassLoader = new URLClassLoader(urls)) {
+            for (Test test : sortedByPriority) {
+                Class<?> cls = urlClassLoader.loadClass(test.getIdentifier());
+                testReports.add(run(test, cls));
             }
-
-            URLClassLoader urlClassLoader = new URLClassLoader(testFolders.toArray(new URL[this.modules.size() * 2]));
-
-            Set<Class> classes = new HashSet<>();
-
-            for (Test test : set) {
-                Class c = urlClassLoader.loadClass(test.getIdentifier());
-                classes.add(c);
-            }
-
-            List<ClassSelector> selectors = classes.stream()
-                    .map(DiscoverySelectors::selectClass)
-                    .collect(Collectors.toList());
-            LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                    .selectors(selectors)
-                    .build();
-            Launcher launcher = LauncherFactory.create();
-            SummaryGeneratingListener listener = new SummaryGeneratingListener();
-            launcher.registerTestExecutionListeners(listener);
-            launcher.execute(request);
-            listener.getSummary().printTo(new PrintWriter(System.out));
-
-            //TODO METTDRE DANS LA LIST A RETURN SAUF QUE Y4A PAS VRAIMENT MOYEN
-
         }
-        catch (MalformedURLException e) {
-            throw new TestLoadException(e);
+        catch (IOException e) {
+
         }
         catch (ClassNotFoundException e) {
-            throw new TestNotFoundException(e);
+
         }
-
-
         return testReports;
+    }
+
+    private TestReport run(Test test, Class<?> cls) {
+        Launcher launcher = LauncherFactory.create();
+        LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
+                .selectors(DiscoverySelectors.selectClass(cls)).build();
+        SummaryGeneratingListener listener = new SummaryGeneratingListener();
+        launcher.registerTestExecutionListeners(listener);
+        launcher.execute(request);
+        return createTestReportFrom(test, listener.getSummary());
+    }
+
+    private int compare(Test t1, Test t2) {
+        return Integer.compare(t1.getPriority().getValue(), t2.getPriority().getValue());
+    }
+
+    private TestReport createTestReportFrom(Test test, TestExecutionSummary summary) {
+        TestReport.Status status = TestReport.Status.SUCESSFUL;
+        Throwable throwable = null;
+        for (TestExecutionSummary.Failure failure : summary.getFailures()) {
+            status = TestReport.Status.FAILURE;
+            throwable = failure.getException();
+        }
+        return new JunitTestReport(test, status, throwable);
     }
 
     @Override
     public boolean accept(String s) {
-        return s.equalsIgnoreCase("junit5");
+        return s != null && IDENTIFIER.equalsIgnoreCase(s.trim());
     }
 }

@@ -39,7 +39,7 @@ public class Commit extends Command {
 
     private void printTestFailures(Set<TestReport> failures) {
         for (TestReport failure : failures) {
-            failure.getException().ifPresent(context.out()::println);
+            failure.getCause().ifPresent(context.out()::println);
         }
     }
 }
