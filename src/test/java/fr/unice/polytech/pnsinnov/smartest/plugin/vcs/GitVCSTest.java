@@ -1,7 +1,6 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.vcs;
 
 import fr.smartest.exceptions.VCSException;
-import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterEach;
@@ -13,7 +12,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GitVCSTest {
 
@@ -64,6 +64,12 @@ class GitVCSTest {
             Set<String> changes = this.gitVCS.diff();
 
             assertTrue(changes.contains(toCreate.getPath().replace("\\", "/")));
+
+            File file = new File("src/test/resources/unmodifiedTestFile.txt");
+
+            if(file.exists()){
+                assertFalse(changes.contains(file.getPath().replace("\\", "/")));
+            }
         } catch (VCSException e) {
             e.printStackTrace();
         }
