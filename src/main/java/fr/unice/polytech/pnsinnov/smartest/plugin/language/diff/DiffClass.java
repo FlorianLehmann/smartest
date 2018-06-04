@@ -39,18 +39,11 @@ public class DiffClass implements Diff {
         for (Tree tree:tests) {
             for (String name :classNames) {
                 if (tree.getCls().getAllDependencies().contains(new Dependency(name))) {
-                    toRun.add(new Test(tree.getCls().getName()));
+                    toRun.add(new TestImplementation(tree.getCls().getName()));
                 }
             }
         }
 
-
-        // si la classe existe
-        // on récupère les dependance des deux classes
-        // on prend les dependance non communes
-
-        // si la classe est ajouté
-        // no problem
         return toRun;
 
     }
