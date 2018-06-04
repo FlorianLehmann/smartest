@@ -1,6 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.production;
 
 
+import fr.smartest.exceptions.ProductionToolException;
 import fr.smartest.plugin.Module;
 import fr.smartest.plugin.ProductionTool;
 import org.apache.maven.shared.invoker.*;
@@ -13,40 +14,42 @@ import java.util.List;
 
 public class MavenProduction implements ProductionTool {
 
-    private String pom = "/pom.xml";
-    private String srcDir = "/src";
-    private String defaultSrc = "src/main/java";
-    private String defaultTest = "src/test/java";
+    private String baseDir;
+
+    @Override
+    public void setUp(String s) {
+        baseDir = s;
+    }
 
     @Override
     public List<Module> getModules() {
-        //PAS VALIDE, baseDir sera l'argument nouveau
-        File baseDir = new File(Paths.get("").toAbsolutePath().toString());
+        return retrieveAllModules(new File(Paths.get(baseDir).toString()));
+    }
 
+    private List<Module> retrieveAllModules(File currentDir){
         List<Module> res = new ArrayList<>();
 
-        File pomfile = new File(baseDir.getAbsolutePath() + pom);
+        File pomfile = new File(currentDir.getAbsolutePath() + PathPlugin.POM_FILE.getName());
 
-        File srcFile = new File(baseDir.getAbsolutePath() + srcDir);
+        File srcFile = new File(currentDir.getAbsolutePath() + PathPlugin.SRC_DIRECTORY.getName());
 
         if(pomfile.exists() && srcFile.exists()){
-            res.add(new MavenModule(baseDir.getAbsolutePath()));
+            res.add(new MavenModule(currentDir.getAbsolutePath()));
         }
 
-        File[] directories = baseDir.listFiles(File::isDirectory);
+        File[] directories = currentDir.listFiles(File::isDirectory);
 
         assert directories != null;
 
         for (File directory : directories) {
-            //TODO A FAIRE AVEC LA NOUVELLE LIB
-            //res.addAll(getModules(directory));
+            res.addAll(retrieveAllModules(directory));
         }
 
         return res;
     }
 
     @Override
-    public void compile() {
+    public void compile() throws ProductionToolException{
         InvocationRequest request = new DefaultInvocationRequest();
         request.setPomFile( new File(Paths.get("pom.xml").toAbsolutePath().toString()));
         request.setGoals( Arrays.asList("clean", "compile"));
@@ -55,7 +58,7 @@ public class MavenProduction implements ProductionTool {
         try {
             invoker.execute(request);
         } catch (MavenInvocationException e) {
-            System.out.println("The maven compilation failed");
+            throw new MavenCompileException();
         }
     }
 
