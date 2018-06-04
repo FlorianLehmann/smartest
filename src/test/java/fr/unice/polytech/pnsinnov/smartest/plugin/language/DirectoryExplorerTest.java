@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +45,8 @@ public class DirectoryExplorerTest {
 
         assertEquals(5, javaFiles.size());
         for (File file : javaFiles) {
-            String filePath = file.getAbsolutePath().split(System.getProperty("user.dir") + "/")[1];
-            assertTrue(this.files.contains(filePath));
+            URI uri = new File("").toPath().toAbsolutePath().toUri().relativize(file.toPath().toAbsolutePath().toUri());
+            assertTrue(this.files.contains(uri.toString()));
         }
     }
 
@@ -59,8 +60,8 @@ public class DirectoryExplorerTest {
 
         assertEquals(4, javaFiles.size());
         for (File file : javaFiles) {
-            String filePath = file.getAbsolutePath().split(System.getProperty("user.dir") + "/")[1];
-            assertTrue(this.files.contains(filePath));
+            URI uri = new File("").toPath().toAbsolutePath().toUri().relativize(file.toPath().toAbsolutePath().toUri());
+            assertTrue(this.files.contains(uri.toString()));
         }
     }
 
