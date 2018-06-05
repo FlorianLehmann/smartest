@@ -6,19 +6,28 @@ import fr.unice.polytech.pnsinnov.smartest.cli.command.Commit;
 import fr.unice.polytech.pnsinnov.smartest.cli.command.ListTests;
 import fr.unice.polytech.pnsinnov.smartest.cli.command.Test;
 import fr.unice.polytech.pnsinnov.smartest.configuration.ConfigReader;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import picocli.CommandLine;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @CommandLine.Command(description = "Smartest.", name = "smartest", mixinStandardHelpOptions = true,
         version = "smartest 2.0", subcommands = {Commit.class, ListTests.class, Test.class})
 public class CommandLineParser implements Runnable {
+    private static final Logger logger = LogManager.getLogger(CommandLineParser.class);
     private final CommandLine commandLine;
     private final Context context;
     private final ConfigReader configReader;
 
     @CommandLine.Option(names = {"--config-path"}, description = "Set path to config.smt file.")
-    private String configPath = "config.smt";
+    private Path configPath = Paths.get("config.smt");
+
+    @CommandLine.Option(names = {"--set-level"}, description = "Set to logger level.")
+    private String level = "OFF";
 
     public CommandLineParser(ConfigReader configReader) {
         this(configReader, new Context.ContextBuilder()
@@ -36,7 +45,7 @@ public class CommandLineParser implements Runnable {
     }
 
     String getConfigPath() {
-        return configPath;
+        return configPath.toString();
     }
 
     private void addContextToCommands() {
@@ -63,11 +72,18 @@ public class CommandLineParser implements Runnable {
     }
 
     public void run() {
+        LogManager.getRootLogger().setLevel(getLevel());
+        logger.info("config-path=" + configPath);
+        logger.info("logger-level=" + level);
         CommandLine.ParseResult result = commandLine.getParseResult();
-        Smartest smartest = new Smartest(configReader.readConfig(configPath));
+        Smartest smartest = new Smartest(configReader.readConfig(configPath.toString()));
         addSmartestToCommands(smartest);
         if (!result.hasSubcommand() && !commandLine.isUsageHelpRequested()) {
             commandLine.usage(context.out());
         }
+    }
+
+    private Level getLevel() {
+        return Level.toLevel(level);
     }
 }
