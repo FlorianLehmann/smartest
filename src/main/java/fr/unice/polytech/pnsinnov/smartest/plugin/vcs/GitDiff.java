@@ -3,13 +3,15 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.vcs;
 
 import fr.smartest.plugin.Diff;
 
+import java.nio.file.Path;
+
 public class GitDiff implements Diff {
 
-    private String path;
+    private Path path;
 
     private Status diffStatus;
 
-    public GitDiff(String path, Status diffStatus){
+    public GitDiff(Path path, Status diffStatus){
         this.path = path;
         this.diffStatus = diffStatus;
     }
@@ -20,7 +22,7 @@ public class GitDiff implements Diff {
     }
 
     @Override
-    public String getPath() {
+    public Path getPath() {
         return path;
     }
 }

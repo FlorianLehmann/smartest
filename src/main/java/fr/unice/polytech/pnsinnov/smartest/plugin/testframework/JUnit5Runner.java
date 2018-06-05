@@ -30,11 +30,11 @@ import java.util.stream.Collectors;
 public class JUnit5Runner implements TestFramework {
     private static final Logger logger = LogManager.getLogger(JUnit5Runner.class);
     private static final String IDENTIFIER = "Junit5";
-    private String path;
+    private Path path;
     private List<Module> modules;
 
     @Override
-    public void setUp(String path, List<Module> modules) {
+    public void setUp(Path path, List<Module> modules) {
         this.path = path;
         this.modules = modules;
         logger.debug("Setup Juni5 with path=\"" + path + "\" and modules=\"" + modules + "\"");
@@ -44,8 +44,8 @@ public class JUnit5Runner implements TestFramework {
         Set<URL> sources = new HashSet<>();
         for (Module module : this.modules) {
             try {
-                Path s = Paths.get(this.path, module.getCompiledSrcPath());
-                Path t = Paths.get(this.path, module.getCompiledTestPath());
+                Path s = module.getCompiledSrcPath();
+                Path t = module.getCompiledTestPath();
                 sources.add(new File(s.toString()).toURI().toURL());
                 sources.add(new File(t.toString()).toURI().toURL());
             }

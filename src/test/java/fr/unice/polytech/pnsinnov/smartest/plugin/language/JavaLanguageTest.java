@@ -31,8 +31,8 @@ public class JavaLanguageTest extends SuperClone {
     public void shouldCreateTree() {
         Module module = Mockito.mock(Module.class);
         List<Module> modules = new ArrayList<>();
-        Mockito.when(module.getSrcPath()).thenReturn(SuperClone.directory.getAbsolutePath() + "/src/main/java");
-        Mockito.when(module.getTestPath()).thenReturn(SuperClone.directory.getAbsolutePath() + "/src/test/java");
+        Mockito.when(module.getSrcPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/main/java"));
+        Mockito.when(module.getTestPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/test/java"));
         modules.add(module);
         javaLanguage.setUp(modules);
 
@@ -55,7 +55,7 @@ public class JavaLanguageTest extends SuperClone {
         shouldCreateTree();
         Diff diff = Mockito.mock(Diff.class);
         Mockito.when(diff.getStatus()).thenReturn(Diff.Status.ADDED);
-        Mockito.when(diff.getPath()).thenReturn(SuperClone.directory.getAbsolutePath() + "/src/main/java/fr/unice/polytech/pnsinnov/Foo.java");
+        Mockito.when(diff.getPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/main/java/fr/unice/polytech/pnsinnov/Foo.java"));
 
         // create the new file
         File fileAdded = new File(SuperClone.directory.getAbsolutePath() + "/src/main/java/fr/unice/polytech/pnsinnov/Foo.java");
@@ -81,8 +81,8 @@ public class JavaLanguageTest extends SuperClone {
     public void shouldGetTestsRelatedToModifiedFile() throws FileNotFoundException, UnsupportedEncodingException {
         Module module = Mockito.mock(Module.class);
         List<Module> modules = new ArrayList<>();
-        Mockito.when(module.getSrcPath()).thenReturn(SuperClone.directory.getAbsolutePath() + "/src/main/java");
-        Mockito.when(module.getTestPath()).thenReturn(SuperClone.directory.getAbsolutePath() + "/src/test/java");
+        Mockito.when(module.getSrcPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/main/java"));
+        Mockito.when(module.getTestPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/test/java"));
         modules.add(module);
         javaLanguage.setUp(modules);
 
@@ -96,7 +96,26 @@ public class JavaLanguageTest extends SuperClone {
 
         Diff diff = Mockito.mock(Diff.class);
         Mockito.when(diff.getStatus()).thenReturn(Diff.Status.MODIFIED);
-        Mockito.when(diff.getPath()).thenReturn(SuperClone.directory.getAbsolutePath() + "/src/main/java/fr/unice/polytech/pnsinnov/Student.java");
+        Mockito.when(diff.getPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/main/java/fr/unice/polytech/pnsinnov/Student.java"));
+
+        // create the new file
+        File fileModified = new File(SuperClone.directory.getAbsolutePath() + "/src/main/java/fr/unice/polytech/pnsinnov/Foo.java");
+        PrintWriter writer = new PrintWriter(fileModified, "UTF-8");
+        writer.println("package fr.unice.polytech.pnsinnov;\n" +
+                "\n" +
+                "public class Student {\n" +
+                "\n" +
+                "    private String name;\n" +
+                "\n" +
+                "    public Student(String name) {\n" +
+                "        this.name = name;\n" +
+                "    }\n" +
+                "\n" +
+                "    public boolean isSmart() {\n" +
+                "        return false;\n" +
+                "    }\n" +
+                "}");
+        writer.close();
 
         Set<Diff> diffs = new HashSet<>();
         diffs.add(diff);

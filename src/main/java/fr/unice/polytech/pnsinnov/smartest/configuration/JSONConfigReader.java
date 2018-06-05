@@ -9,18 +9,21 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class JSONConfigReader implements ConfigReader {
     private static final Logger logger = LogManager.getLogger(JSONConfigReader.class);
 
     @Override
-    public Configuration readConfig(String path) {
+    public Configuration readConfig(Path path) {
         logger.info("Reading " + path + " as a json file");
         JSONObject config = readJSONFromFile(path);
+
         return new ConfigurationHolder(
-                getFieldFromConfig(ConfigKey.VCS_PATH, config),
-                getFieldFromConfig(ConfigKey.PLUGIN_PATH, config),
-                getFieldFromConfig(ConfigKey.PROJECT_PATH, config),
+                Paths.get(getFieldFromConfig(ConfigKey.VCS_PATH, config)).toAbsolutePath(),
+                Paths.get(getFieldFromConfig(ConfigKey.PLUGIN_PATH, config)).toAbsolutePath(),
+                Paths.get(getFieldFromConfig(ConfigKey.PROJECT_PATH, config)).toAbsolutePath(),
                 getFieldFromConfig(ConfigKey.LANGUAGE, config),
                 getFieldFromConfig(ConfigKey.PRODUCTION_TOOL, config),
                 getFieldFromConfig(ConfigKey.TEST_FRAMEWORK, config),
@@ -35,12 +38,12 @@ public class JSONConfigReader implements ConfigReader {
         return key.getDefaultValue();
     }
 
-    private JSONObject readJSONFromFile(String configPath) {
+    private JSONObject readJSONFromFile(Path configPath) {
         FileReader fileReader;
         JSONParser jsonParser = new JSONParser();
 
         try {
-            fileReader = new FileReader(configPath);
+            fileReader = new FileReader(configPath.toAbsolutePath().toFile());
             JSONObject res = (JSONObject) jsonParser.parse(fileReader);
             fileReader.close();
 

@@ -9,6 +9,7 @@ import picocli.CommandLine;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ class CommandLineParserTest {
     @Test
     void noArgument() {
         commandLineParser.parse();
-        assertEquals("config.smt", commandLineParser.getConfigPath());
+        assertEquals(Paths.get("config.smt"), commandLineParser.getConfigPath());
         assertEquals(false, commandDone.get("list-tests"));
         assertEquals(false, commandDone.get("test"));
         assertEquals(false, commandDone.get("commit"));
@@ -58,7 +59,7 @@ class CommandLineParserTest {
     @Test
     void changeConfigPath() {
         commandLineParser.parse("--config-path", "config.json");
-        assertEquals("config.json", commandLineParser.getConfigPath());
+        assertEquals(Paths.get("config.json"), commandLineParser.getConfigPath());
     }
 
     @Test

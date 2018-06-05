@@ -5,14 +5,16 @@ import fr.unice.polytech.pnsinnov.smartest.configuration.Configuration;
 import fr.unice.polytech.pnsinnov.smartest.configuration.ConfigurationHolder;
 import org.junit.jupiter.api.Test;
 
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class PluginLoaderTest {
     @Test
     void pluginPathDoesNotExist() {
-        Configuration configuration = new ConfigurationHolder(null, "unknownFolder", null, "Python", null, null, null);
+        Configuration configuration = new ConfigurationHolder(null, Paths.get("unknownFolder"), null, "Python", null, null, null);
         PluginLoader pluginLoader = new PluginLoader(configuration);
         assertThrows(PluginNotFound.class, pluginLoader::language);
     }
@@ -21,7 +23,12 @@ class PluginLoaderTest {
     void loadJava() throws PluginException {
         URL plugins = this.getClass().getClassLoader().getResource("plugins");
         assertNotNull(plugins);
-        Configuration configuration = new ConfigurationHolder(null, plugins.getPath(), null, "Java", null, null, null);
+        Configuration configuration = null;
+        try {
+            configuration = new ConfigurationHolder(null, Paths.get(plugins.toURI()), null, "Java", null, null, null);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         PluginLoader pluginLoader = new PluginLoader(configuration);
         assertTrue(pluginLoader.language().accept("Java"));
     }
@@ -31,8 +38,13 @@ class PluginLoaderTest {
     void loadJunit5() throws PluginException {
         URL plugins = this.getClass().getClassLoader().getResource("plugins");
         assertNotNull(plugins);
-        Configuration configuration = new ConfigurationHolder(null, plugins.getPath(), null, null, null, "Junit5",
-                null);
+        Configuration configuration = null;
+        try {
+            configuration = new ConfigurationHolder(null, Paths.get(plugins.toURI()), null, null, null, "Junit5",
+                    null);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         PluginLoader pluginLoader = new PluginLoader(configuration);
         assertTrue(pluginLoader.testFramework().accept("Junit5"));
     }
@@ -41,7 +53,12 @@ class PluginLoaderTest {
     void loadMaven() throws PluginException {
         URL plugins = this.getClass().getClassLoader().getResource("plugins");
         assertNotNull(plugins);
-        Configuration configuration = new ConfigurationHolder(null, plugins.getPath(), null, null, "Maven", null, null);
+        Configuration configuration = null;
+        try {
+            configuration = new ConfigurationHolder(null, Paths.get(plugins.toURI()), null, null, "Maven", null, null);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         PluginLoader pluginLoader = new PluginLoader(configuration);
         assertTrue(pluginLoader.productionTool().accept("Maven"));
     }
@@ -50,7 +67,12 @@ class PluginLoaderTest {
     void loadGit() throws PluginException {
         URL plugins = this.getClass().getClassLoader().getResource("plugins");
         assertNotNull(plugins);
-        Configuration configuration = new ConfigurationHolder(null, plugins.getPath(), null, null, null, null, "git");
+        Configuration configuration = null;
+        try {
+            configuration = new ConfigurationHolder(null, Paths.get(plugins.toURI()), null, null, null, null, "git");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         PluginLoader pluginLoader = new PluginLoader(configuration);
         assertTrue(pluginLoader.vcs().accept("git"));
     }
@@ -59,8 +81,13 @@ class PluginLoaderTest {
     void unknownPlugin() {
         URL plugins = this.getClass().getClassLoader().getResource("plugins");
         assertNotNull(plugins);
-        Configuration configuration = new ConfigurationHolder(null, plugins.getPath(), null, null, null, "Junit6",
-                null);
+        Configuration configuration = null;
+        try {
+            configuration = new ConfigurationHolder(null, Paths.get(plugins.toURI()), null, null, null, "Junit6",
+                    null);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         PluginLoader pluginLoader = new PluginLoader(configuration);
         assertThrows(PluginNotFound.class, pluginLoader::testFramework);
     }
@@ -69,8 +96,13 @@ class PluginLoaderTest {
     void loadAll() throws PluginException {
         URL plugins = this.getClass().getClassLoader().getResource("plugins");
         assertNotNull(plugins);
-        Configuration configuration = new ConfigurationHolder(null, plugins.getPath(), null, "Java", "Maven",
-                "Junit5", "git");
+        Configuration configuration = null;
+        try {
+            configuration = new ConfigurationHolder(null, Paths.get(plugins.toURI()), null, "Java", "Maven",
+                    "Junit5", "git");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         PluginLoader pluginLoader = new PluginLoader(configuration);
         assertTrue(pluginLoader.language().accept("Java"));
         assertTrue(pluginLoader.productionTool().accept("Maven"));
@@ -82,8 +114,13 @@ class PluginLoaderTest {
     void loadAllFromExampleJar() throws PluginException {
         URL plugins = this.getClass().getClassLoader().getResource("plugins");
         assertNotNull(plugins);
-        Configuration configuration = new ConfigurationHolder(null, plugins.getPath(), null, "Python", "Pypi",
-                "Pytest", "svn");
+        Configuration configuration = null;
+        try {
+            configuration = new ConfigurationHolder(null, Paths.get(plugins.toURI()), null, "Python", "Pypi",
+                    "Pytest", "svn");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         PluginLoader pluginLoader = new PluginLoader(configuration);
         assertTrue(pluginLoader.language().accept("Python"));
         assertTrue(pluginLoader.productionTool().accept("Pypi"));

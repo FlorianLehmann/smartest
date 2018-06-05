@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +30,7 @@ class GitVCSTest extends SuperClone {
     @BeforeEach
     public void setup(){
         gitVCS = new GitVCS();
-        gitVCS.setUp(Paths.get("").toAbsolutePath().toString());
+        gitVCS.setUp(Paths.get(""));
 
         try {
             toCreate = new File("src/test/resources/emptyTestFile.txt");
@@ -66,18 +67,18 @@ class GitVCSTest extends SuperClone {
     @Test
     void diff() {
         try {
-            Set<String> paths = new HashSet<>();
+            Set<Path> paths = new HashSet<>();
 
             for (Diff diff:
                  this.gitVCS.diff()) {
                 paths.add(diff.getPath());
             }
-            assertTrue(paths.contains(toCreate.getPath().replace("\\", "/")));
+            assertTrue(paths.contains(toCreate.toPath()));
 
             File file = new File("src/test/resources/unmodifiedTestFile.txt");
 
             if(file.exists()){
-                assertFalse(paths.contains(file.getPath().replace("\\", "/")));
+                assertFalse(paths.contains(file.getPath()));
             }
         } catch (VCSException e) {
             e.printStackTrace();
@@ -88,7 +89,7 @@ class GitVCSTest extends SuperClone {
     void commit() {
         Git git = null;
 
-        this.gitVCS.setUp(SuperClone.directory.getAbsolutePath());
+        this.gitVCS.setUp(SuperClone.directory.toPath());
 
         try {
             git = Git.open(new File(SuperClone.directory.getAbsolutePath(), ".git"));

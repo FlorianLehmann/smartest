@@ -5,7 +5,7 @@ public enum ConfigKey {
 
     VCS_PATH("vcs_path", ".git"),
     PLUGIN_PATH("plugin_path", "plugins"),
-    PROJECT_PATH("project_path", "."),
+    PROJECT_PATH("project_path", ""),
     LANGUAGE("language", "java"),
     PRODUCTION_TOOL("production_tool", "maven"),
     TEST_FRAMEWORK("test_framework", "junit5"),

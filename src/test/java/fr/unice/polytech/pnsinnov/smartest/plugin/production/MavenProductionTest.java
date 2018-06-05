@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +23,7 @@ public class MavenProductionTest extends SuperClone {
     @BeforeEach
     public void setup(){
         production = new MavenProduction();
-        production.setUp(SuperClone.directory.getAbsolutePath());
+        production.setUp(SuperClone.directory.toPath());
     }
 
     @Test
@@ -33,8 +34,8 @@ public class MavenProductionTest extends SuperClone {
         if(production.getModules().size() >= 1){
             Module module = production.getModules().get(0);
 
-            assertEquals("src/main/java", module.getSrcPath());
-            assertEquals("src/test/java", module.getTestPath());
+            assertEquals(Paths.get("src/test/resources/tmp/src/main/java").toAbsolutePath(), module.getSrcPath());
+            assertEquals(Paths.get("src/test/resources/tmp/src/test/java").toAbsolutePath(), module.getTestPath());
         }
 
     }

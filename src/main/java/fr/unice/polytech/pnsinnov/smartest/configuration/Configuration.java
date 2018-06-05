@@ -1,11 +1,13 @@
 package fr.unice.polytech.pnsinnov.smartest.configuration;
 
+import java.nio.file.Path;
+
 public interface Configuration {
-    String gitPath();
+    Path gitPath();
 
-    String pluginPath();
+    Path pluginPath();
 
-    String projectPath();
+    Path projectPath();
 
     String language();
 

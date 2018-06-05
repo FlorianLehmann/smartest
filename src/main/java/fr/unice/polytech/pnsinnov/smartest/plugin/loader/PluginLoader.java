@@ -129,7 +129,7 @@ public class PluginLoader {
     }
 
     private File[] listJar() {
-        File dir = new File(configuration.pluginPath());
+        File dir = new File(configuration.pluginPath().toAbsolutePath().toString());
         File[] files = dir.listFiles(FILENAME_FILTER);
         if (files == null) {
             logger.warn("Directory \"" + configuration.pluginPath() + "\" doesn't exists");

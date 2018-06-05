@@ -10,17 +10,18 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
 public class GitVCS implements VCS {
 
-    private String gitPath;
+    private Path gitPath;
 
     @Override
-    public void setUp(String s) {
-        this.gitPath = s;
+    public void setUp(Path path) {
+        this.gitPath = path;
     }
 
     @Override
@@ -28,7 +29,7 @@ public class GitVCS implements VCS {
         Git git = null;
 
         try {
-            git = Git.open(new File(gitPath, ".git"));
+            git = Git.open(new File(gitPath.toAbsolutePath().toString(), ".git"));
             AddCommand add = git.add();
 
             for (String path : git.status().call().getUncommittedChanges()) {
@@ -53,23 +54,23 @@ public class GitVCS implements VCS {
         Git git = null;
 
         try {
-            git = Git.open(new File(Paths.get("").toAbsolutePath().toString(), ".git"));
+            git = Git.open(new File(gitPath.toAbsolutePath().toString(), ".git"));
 
             HashSet<Diff> diffs = new HashSet<>();
 
             for (String path :
                     git.status().call().getAdded()) {
-                diffs.add(new GitDiff(path, Diff.Status.ADDED));
+                diffs.add(new GitDiff(Paths.get(path), Diff.Status.ADDED));
             }
 
             for (String path :
                     git.status().call().getRemoved()) {
-                diffs.add(new GitDiff(path, Diff.Status.REMOVED));
+                diffs.add(new GitDiff(Paths.get(path), Diff.Status.REMOVED));
             }
 
             for (String path :
                     git.status().call().getModified()) {
-                diffs.add(new GitDiff(path, Diff.Status.MODIFIED));
+                diffs.add(new GitDiff(Paths.get(path), Diff.Status.MODIFIED));
             }
 
             return diffs;

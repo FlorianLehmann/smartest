@@ -68,8 +68,10 @@ public class DiffClass implements Diff {
             if (fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.ADDED) ||
                     fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.MODIFIED)) {
                 for (Module module : modules) {
-                    if (fileDiff.getPath().contains(module.getSrcPath())) {
-                        files.add(new File(fileDiff.getPath()));
+
+                    //TODO REMPALCER PATH
+                    if (fileDiff.getPath().toAbsolutePath().toString().contains(module.getSrcPath().toAbsolutePath().toString())) {
+                        files.add(new File(fileDiff.getPath().toAbsolutePath().toString()));
                     }
                 }
             }
@@ -83,8 +85,10 @@ public class DiffClass implements Diff {
             if (fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.ADDED) ||
                     fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.MODIFIED)) {
                 for (Module module : modules) {
-                    if (fileDiff.getPath().contains(module.getTestPath())) {
-                        files.add(new File(fileDiff.getPath()));
+
+                    //TODO Remplacer avec les paths
+                    if (fileDiff.getPath().toAbsolutePath().toString().contains(module.getTestPath().toAbsolutePath().toString())) {
+                        files.add(new File(fileDiff.getPath().toAbsolutePath().toString()));
                     }
                 }
             }

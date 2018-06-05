@@ -3,17 +3,19 @@ package fr.unice.polytech.pnsinnov.smartest.configuration;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.nio.file.Path;
+
 public class ConfigurationHolder implements Configuration {
     private static final Logger logger = LogManager.getLogger(JSONConfigReader.class);
-    private final String gitPath;
-    private final String pluginPath;
-    private final String projectPath;
+    private final Path gitPath;
+    private final Path pluginPath;
+    private final Path projectPath;
     private final String language;
     private final String productionTool;
     private final String testFramework;
     private final String vcs;
 
-    public ConfigurationHolder(String gitPath, String pluginPath, String projectPath, String language,
+    public ConfigurationHolder(Path gitPath, Path pluginPath, Path projectPath, String language,
                                String productionTool, String testFramework, String vcs) {
         this.gitPath = gitPath;
         this.pluginPath = pluginPath;
@@ -26,17 +28,17 @@ public class ConfigurationHolder implements Configuration {
     }
 
     @Override
-    public String gitPath() {
+    public Path gitPath() {
         return gitPath;
     }
 
     @Override
-    public String pluginPath() {
+    public Path pluginPath() {
         return pluginPath;
     }
 
     @Override
-    public String projectPath() {
+    public Path projectPath() {
         return projectPath;
     }
 

@@ -44,8 +44,8 @@ public class CommandLineParser implements Runnable {
         addContextToCommands();
     }
 
-    String getConfigPath() {
-        return configPath.toString();
+    Path getConfigPath() {
+        return configPath;
     }
 
     private void addContextToCommands() {
@@ -76,7 +76,7 @@ public class CommandLineParser implements Runnable {
         logger.info("config-path=" + configPath);
         logger.info("logger-level=" + level);
         CommandLine.ParseResult result = commandLine.getParseResult();
-        Smartest smartest = new Smartest(configReader.readConfig(configPath.toString()));
+        Smartest smartest = new Smartest(configReader.readConfig(this.configPath));
         addSmartestToCommands(smartest);
         if (!result.hasSubcommand() && !commandLine.isUsageHelpRequested()) {
             commandLine.usage(context.out());

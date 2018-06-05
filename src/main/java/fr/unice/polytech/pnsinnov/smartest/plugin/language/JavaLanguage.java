@@ -28,8 +28,9 @@ public class JavaLanguage implements Language {
             List<String> srcDirPaths = new ArrayList<>();
             List<String> testDirPaths = new ArrayList<>();
             for (Module module : modules) {
-                srcDirPaths.add(module.getSrcPath());
-                testDirPaths.add(module.getTestPath());
+                //TODO MODIFIER AVEC LES PATHS
+                srcDirPaths.add(module.getSrcPath().toAbsolutePath().toString());
+                testDirPaths.add(module.getTestPath().toAbsolutePath().toString());
             }
             DirectoryExplorer directoryExplorer = new DirectoryExplorer();
             List<File> javaFiles = directoryExplorer.explore(srcDirPaths);

@@ -10,32 +10,34 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class MavenModule implements Module {
 
-    private final String path;
+    private final Path origin;
 
-    private String srcPath;
+    private Path srcPath;
 
-    private String testPath;
+    private Path testPath;
 
-    private String outputSrcPath;
+    private Path outputSrcPath;
 
-    private String outputTestPath;
+    private Path outputTestPath;
 
-    public MavenModule(String origin) {
-        this.path = origin;
+    public MavenModule(Path origin) {
+        this.origin = origin;
         srcPath = null;
         testPath = null;
         outputSrcPath = null;
         outputTestPath = null;
     }
 
-    private String readBuild(BuildToDirectory buildToDirectory, PathPlugin defaultPath) {
+    private Path readBuild(BuildToDirectory buildToDirectory, PathPlugin defaultPath) {
         MavenXpp3Reader reader = new MavenXpp3Reader();
         String result;
         try {
-            FileReader fileReader = new FileReader(new File(this.path + PathPlugin.POM_FILE.getName()));
+            FileReader fileReader = new FileReader(new File(this.origin.toAbsolutePath().toString(), PathPlugin.POM_FILE.getName()));
             Model model = reader.read(fileReader);
             Build build = model.getBuild();
             if (model.getBuild() == null || buildToDirectory.convert(build) == null) {
@@ -52,11 +54,12 @@ public class MavenModule implements Module {
         catch (IOException | XmlPullParserException e) {
             result = defaultPath.getName();
         }
-        return result;
+
+        return Paths.get(this.origin.toAbsolutePath().toString(), result);
     }
 
     @Override
-    public String getSrcPath() {
+    public Path getSrcPath() {
         if (srcPath == null) {
             srcPath = readBuild(Build::getSourceDirectory, PathPlugin.DEFAULT_SRC);
         }
@@ -64,7 +67,7 @@ public class MavenModule implements Module {
     }
 
     @Override
-    public String getTestPath() {
+    public Path getTestPath() {
         if (testPath == null) {
             testPath = readBuild(Build::getTestSourceDirectory, PathPlugin.DEFAULT_TST);
         }
@@ -72,7 +75,7 @@ public class MavenModule implements Module {
     }
 
     @Override
-    public String getCompiledSrcPath() {
+    public Path getCompiledSrcPath() {
         if (outputSrcPath == null) {
             outputSrcPath = readBuild(Build::getOutputDirectory, PathPlugin.DEFAULT_SRC_OUTPUT);
         }
@@ -80,7 +83,7 @@ public class MavenModule implements Module {
     }
 
     @Override
-    public String getCompiledTestPath() {
+    public Path getCompiledTestPath() {
         if (outputTestPath == null) {
             outputTestPath = readBuild(Build::getTestOutputDirectory, PathPlugin.DEFAULT_TEST_OUTPUT);
         }
