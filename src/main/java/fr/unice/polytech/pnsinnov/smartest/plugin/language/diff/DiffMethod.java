@@ -1,5 +1,6 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.diff;
 
+import fr.smartest.plugin.Module;
 import fr.smartest.plugin.Test;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class DiffMethod implements Diff {
     }
 
     @Override
-    public Set<Test> getTestsRelatedToChanges() {
+    public Set<Test> getTestsRelatedToChanges(List<Module> modules) {
         throw new UnsupportedOperationException("getTestsRelatedToChanges scope : METHOD");
     }
 }

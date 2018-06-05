@@ -19,8 +19,11 @@ import java.util.Set;
 
 public class JavaLanguage implements Language {
 
+    private List<Module> modules;
+
     @Override
     public void setUp(List<Module> modules) {
+        this.modules = modules;
         if (!Database.getInstance().checkExistence()) {
             List<String> srcDirPaths = new ArrayList<>();
             List<String> testDirPaths = new ArrayList<>();
@@ -39,8 +42,12 @@ public class JavaLanguage implements Language {
 
             List<File> javaTestFiles = directoryExplorer.explore(testDirPaths);
             treeFactory = new TreeFactory(Database.getInstance().getTests());
+
+            List<File> common = new ArrayList<>();
+            common.addAll(javaFiles);
+            common.addAll(javaTestFiles);
             try {
-                treeFactory.generateTrees(javaTestFiles, javaFiles);
+                treeFactory.generateTrees(javaTestFiles, common);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -57,7 +64,7 @@ public class JavaLanguage implements Language {
             return new HashSet<>();
         }
         try {
-            return diff.getTestsRelatedToChanges();
+            return diff.getTestsRelatedToChanges(modules);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -85,4 +85,8 @@ public class Database {
     public List<Tree> getTests() {
         return tests;
     }
+
+    public void setClassName(List<String> newClassNames) {
+        className = newClassNames;
+    }
 }

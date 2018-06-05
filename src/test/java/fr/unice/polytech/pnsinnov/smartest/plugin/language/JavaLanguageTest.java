@@ -135,6 +135,7 @@ public class JavaLanguageTest extends SuperClone {
         assertEquals(testImplementations ,javaLanguage.getTestsRelatedToChanges("CLASS", diffs));
     }
 
+    //TODO si il n'arrive pas à résoudre le lien d'une classe est qu'une execption est levé, il ne cherche pas les suivantes (ex extends de tree factory (TreeFactoryTests)
     /*@Test
     public void shouldGetTestsRelatedToRemovedFile() {
         Diff diff = Mockito.mock(Diff.class);

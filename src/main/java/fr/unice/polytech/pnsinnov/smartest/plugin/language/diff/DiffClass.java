@@ -1,5 +1,6 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.diff;
 
+import fr.smartest.plugin.Module;
 import fr.smartest.plugin.Test;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.factory.TreeFactory;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Dependency;
@@ -22,14 +23,14 @@ public class DiffClass implements Diff {
     }
 
     @Override
-    public Set<fr.smartest.plugin.Test> getTestsRelatedToChanges() throws IOException {
+    public Set<fr.smartest.plugin.Test> getTestsRelatedToChanges(List<Module> modules) throws IOException {
         Database database = Database.getInstance();
         List<Tree> tests = database.getTests();
         List<Tree> oldSrcClass = database.getTree();
+        List<String> oldClassNames = database.getClassName();
 
         List<Tree> newSrcClass = new ArrayList<>();
-        new TreeFactory(newSrcClass).generateTrees(getFileModifiedOrAdded(), getFileModifiedOrAdded());
-        //WARNING il ajoute le nom dans les classes
+        new TreeFactory(newSrcClass).generateTrees(getSourceFileModifiedOrAdded(modules), getSourceFileModifiedOrAdded(modules));
         // on ne différencie pas les tests du code source
 
         List<String> classNames = new ArrayList<>();
@@ -47,16 +48,25 @@ public class DiffClass implements Diff {
             }
         }
 
+        //WARNING il ajoute le nom dans les classes
+        database.setClassName(oldClassNames);
+        //fileDiff.forEach(diff -> System.out.println(diff.getPath()));
+
         return toRun;
 
     }
 
-    private List<File> getFileModifiedOrAdded() {
+    private List<File> getSourceFileModifiedOrAdded(List<Module> modules) {
         List<File> files = new ArrayList<>();
         fileDiff.forEach(fileDiff -> {
             if (fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.ADDED) ||
                     fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.MODIFIED)) {
-                files.add(new File(fileDiff.getPath()));
+                /*for (Module module : modules) {
+                    if (fileDiff.getPath().contains(module.getSrcPath())) {
+                        System.out.println("TEST" + fileDiff.getPath());*/
+                        files.add(new File(fileDiff.getPath()));
+                    /*}
+                }*/
             }
         });
         return files;
