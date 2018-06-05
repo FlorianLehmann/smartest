@@ -1,26 +1,25 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DirectoryExplorer {
 
-    public List<File> explore(List<String> directories) {
+    public List<File> explore(List<Path> directories) {
         List<File> javaFiles = new ArrayList<>();
 
-        for (String directory : directories)
+        for (Path directory : directories)
             javaFiles.addAll(explore(directory));
 
         return javaFiles;
     }
 
-    public List<File> explore(String directory) {
+    public List<File> explore(Path directory) {
 
         List<File> javaFiles = new ArrayList<>();
-        File dir = new File(directory);
+        File dir = new File(directory.toAbsolutePath().toString());
 
         String[] files = dir.list();
 
@@ -30,7 +29,7 @@ public class DirectoryExplorer {
                 if (tmpFile.isFile() && file.toLowerCase().endsWith(".java")) {
                     javaFiles.add(tmpFile);
                 } else if (tmpFile.isDirectory()) {
-                    javaFiles.addAll(explore(tmpFile.getAbsolutePath()));
+                    javaFiles.addAll(explore(tmpFile.toPath()));
                 }
             }
         }

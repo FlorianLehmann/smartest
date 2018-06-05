@@ -3,7 +3,6 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model;
 
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.persistence.Database;
 
-import javax.naming.InvalidNameException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -58,4 +57,5 @@ public class Class implements Serializable {
         this.dependencies = toKeep;
         methods.forEach(Method::refineDependency);
     }
+
 }

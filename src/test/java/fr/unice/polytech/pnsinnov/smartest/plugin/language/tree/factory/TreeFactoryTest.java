@@ -8,10 +8,12 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TreeFactoryTest extends SuperClone {
 
@@ -28,7 +30,7 @@ class TreeFactoryTest extends SuperClone {
         classNames.add("fr.unice.polytech.pnsinnov.Main");
         classNames.add("fr.unice.polytech.pnsinnov.School");
         classNames.add("fr.unice.polytech.pnsinnov.Student");
-        files = new DirectoryExplorer().explore(SuperClone.directory.getAbsolutePath() + "/src/main/java");
+        files = new DirectoryExplorer().explore(Paths.get(SuperClone.directory.getAbsolutePath(), "/src/main/java"));
     }
 
     @Test
