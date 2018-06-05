@@ -27,7 +27,7 @@ public class CommandLineParser implements Runnable {
     private Path configPath = Paths.get("config.smt");
 
     @CommandLine.Option(names = {"--set-level"}, description = "Set to logger level.")
-    private String level = "OFF";
+    private String level = Level.OFF.toString();
 
     public CommandLineParser(ConfigReader configReader) {
         this(configReader, new Context.ContextBuilder()

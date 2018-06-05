@@ -76,7 +76,7 @@ public class PluginLoader {
     private <T extends Plugin> T initialize(String identifier, Class<T> cls) throws PluginException {
         File[] files = listJar();
         Set<Class<? extends T>> classes = loadFromSmartest(cls);
-        logger.info("Default plugin found in Smartest : " + Arrays.asList(files));
+        logger.info("Default plugin found in Smartest : " + classes);
         logger.info("Plugin found in plugin directory : " + Arrays.asList(files));
         Optional<? extends T> plugin = processClasses(classes, identifier);
         if (plugin.isPresent()) {
