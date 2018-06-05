@@ -21,7 +21,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,19 +29,10 @@ import java.util.stream.Collectors;
 public class JUnit5Runner implements TestFramework {
     private static final Logger logger = LogManager.getLogger(JUnit5Runner.class);
     private static final String IDENTIFIER = "Junit5";
-    private Path path;
-    private List<Module> modules;
 
-    @Override
-    public void setUp(Path path, List<Module> modules) {
-        this.path = path;
-        this.modules = modules;
-        logger.debug("Setup Juni5 with path=\"" + path + "\" and modules=\"" + modules + "\"");
-    }
-
-    private URL[] getModulesURL() {
+    private URL[] getModulesURL(List<Module> modules) {
         Set<URL> sources = new HashSet<>();
-        for (Module module : this.modules) {
+        for (Module module : modules) {
             try {
                 Path s = module.getCompiledSrcPath();
                 Path t = module.getCompiledTestPath();
@@ -58,12 +48,12 @@ public class JUnit5Runner implements TestFramework {
     }
 
     @Override
-    public Set<TestReport> run(Set<Test> tests) throws TestFrameworkException {
+    public Set<TestReport> run(Set<Test> tests, List<Module> modules) throws TestFrameworkException {
         logger.debug("Running tests : " + tests);
         Set<TestReport> testReports = new HashSet<>();
         List<Test> sortedByPriority = tests.stream().sorted(this::compare).collect(Collectors.toList());
         logger.debug("Sorted tests by priority: " + sortedByPriority);
-        URL[] urls = getModulesURL();
+        URL[] urls = getModulesURL(modules);
         try (URLClassLoader urlClassLoader = new URLClassLoader(urls)) {
             for (Test test : sortedByPriority) {
                 Class<?> cls = urlClassLoader.loadClass(test.getIdentifier());
