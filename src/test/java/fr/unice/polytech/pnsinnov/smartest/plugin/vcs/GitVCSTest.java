@@ -5,6 +5,9 @@ import fr.smartest.plugin.Diff;
 import fr.unice.polytech.pnsinnov.smartest.SuperClone;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,10 +18,9 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-class GitVCSTest extends SuperClone{
+class GitVCSTest extends SuperClone {
 
     private GitVCS gitVCS;
 
@@ -79,6 +81,45 @@ class GitVCSTest extends SuperClone{
             }
         } catch (VCSException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    void commit() {
+        Git git = null;
+
+        this.gitVCS.setUp(SuperClone.directory.getAbsolutePath());
+
+        try {
+            git = Git.open(new File(SuperClone.directory.getAbsolutePath(), ".git"));
+
+            File file = new File(SuperClone.directory.getAbsolutePath(), "empty.txt");
+
+            if(file.createNewFile()){
+                git.add().addFilepattern(file.getName()).call();
+
+                assertTrue(git.status().call().hasUncommittedChanges());
+
+                assertEquals(1, git.status().call().getUncommittedChanges().size());
+
+                this.gitVCS.commit("commit test");
+
+                assertFalse(git.status().call().hasUncommittedChanges());
+
+                RevWalk walk = new RevWalk(git.getRepository());
+
+                ObjectId head = git.getRepository().resolve("HEAD^{tree}");
+
+                RevCommit youngestCommit = walk.parseCommit(head);
+
+                assertEquals(youngestCommit.getShortMessage(), "commit test");
+            }
+        } catch (IOException | GitAPIException | VCSException e) {
+            //Commit failed..
+        } finally {
+            if (git != null){
+                git.close();
+            }
         }
     }
 
