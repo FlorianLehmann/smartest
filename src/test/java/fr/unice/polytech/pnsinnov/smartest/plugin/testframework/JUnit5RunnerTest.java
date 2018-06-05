@@ -17,21 +17,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JUnit5RunnerTest extends SuperClone {
     private JUnit5Runner jUnit5Runner;
+    private MavenProduction mavenProduction;
 
     @BeforeEach
     void setUp() throws ProductionToolException {
         jUnit5Runner = new JUnit5Runner();
-        MavenProduction mavenProduction = new MavenProduction();
+        mavenProduction = new MavenProduction();
         mavenProduction.setUp(SuperClone.directory.toPath());
         mavenProduction.compile();
-        jUnit5Runner.setUp(SuperClone.directory.toPath(), mavenProduction.getModules());
     }
 
     @Test
     void findSimpleTestAndRunIt() throws TestFrameworkException {
         Set<fr.smartest.plugin.Test> junitTests = new HashSet<>();
         junitTests.add(new JunitTest(Priority.HIGH, "fr.unice.polytech.pnsinnov.SchoolTest"));
-        Set<TestReport> run = jUnit5Runner.run(junitTests);
+        Set<TestReport> run = jUnit5Runner.run(junitTests, mavenProduction.getModules());
         assertFalse(run.isEmpty());
         assertTrue(run.stream().allMatch(testReport -> testReport.getResult() == TestReport.Status.SUCESSFUL));
     }
