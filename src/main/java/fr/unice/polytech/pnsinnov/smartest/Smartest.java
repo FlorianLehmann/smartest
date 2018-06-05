@@ -6,11 +6,14 @@ import fr.smartest.plugin.*;
 import fr.unice.polytech.pnsinnov.smartest.configuration.Configuration;
 import fr.unice.polytech.pnsinnov.smartest.exceptions.TestFailureException;
 import fr.unice.polytech.pnsinnov.smartest.plugin.loader.PluginLoader;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class Smartest {
+    private static final Logger logger = LogManager.getLogger(Smartest.class);
     private final PluginLoader pluginLoader;
 
     public Smartest(Configuration configuration) {
@@ -34,6 +37,7 @@ public class Smartest {
             }
         }
         if (!failures.isEmpty()) {
+            logger.warn("Some tests failed : " + failures);
             throw new TestFailureException(failures);
         }
         pluginLoader.vcs().commit(message);

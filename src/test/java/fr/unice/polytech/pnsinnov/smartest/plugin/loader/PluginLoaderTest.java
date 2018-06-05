@@ -1,10 +1,8 @@
-package fr.unice.polytech.pnsinnov.smartest.plugin;
+package fr.unice.polytech.pnsinnov.smartest.plugin.loader;
 
 import fr.smartest.exceptions.PluginException;
 import fr.unice.polytech.pnsinnov.smartest.configuration.Configuration;
 import fr.unice.polytech.pnsinnov.smartest.configuration.ConfigurationHolder;
-import fr.unice.polytech.pnsinnov.smartest.plugin.loader.PluginLoader;
-import fr.unice.polytech.pnsinnov.smartest.plugin.loader.PluginNotFound;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
@@ -14,9 +12,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class PluginLoaderTest {
     @Test
     void pluginPathDoesNotExist() {
-        Configuration configuration = new ConfigurationHolder(null, "unknownFolder", null, null, null, null, null);
+        Configuration configuration = new ConfigurationHolder(null, "unknownFolder", null, "Python", null, null, null);
         PluginLoader pluginLoader = new PluginLoader(configuration);
-        assertThrows(PluginException.class, pluginLoader::language);
+        assertThrows(PluginNotFound.class, pluginLoader::language);
     }
 
     @Test

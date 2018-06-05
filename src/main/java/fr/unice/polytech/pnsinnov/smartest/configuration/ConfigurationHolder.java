@@ -1,6 +1,10 @@
 package fr.unice.polytech.pnsinnov.smartest.configuration;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 public class ConfigurationHolder implements Configuration {
+    private static final Logger logger = LogManager.getLogger(JSONConfigReader.class);
     private final String gitPath;
     private final String pluginPath;
     private final String projectPath;
@@ -18,6 +22,7 @@ public class ConfigurationHolder implements Configuration {
         this.productionTool = productionTool;
         this.testFramework = testFramework;
         this.vcs = vcs;
+        logger.debug("Config found : " + toString());
     }
 
     @Override
@@ -53,5 +58,13 @@ public class ConfigurationHolder implements Configuration {
     @Override
     public String vcs() {
         return vcs;
+    }
+
+    @Override
+    public String toString() {
+        return "ConfigurationHolder{gitPath='" + gitPath + "\', pluginPath='" + pluginPath +
+                "\', projectPath='" + projectPath + "\', language='" + language +
+                "\', productionTool='" + productionTool + "\', testFramework='" + testFramework +
+                "\', vcs='" + vcs + "\'}";
     }
 }

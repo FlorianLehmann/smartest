@@ -4,21 +4,24 @@ import com.google.common.io.PatternFilenameFilter;
 import fr.smartest.exceptions.PluginException;
 import fr.smartest.plugin.*;
 import fr.unice.polytech.pnsinnov.smartest.configuration.Configuration;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 public class PluginLoader {
+    private static final Logger logger = LogManager.getLogger(PluginLoader.class);
     private static final String PACKAGE = "fr.unice.polytech.pnsinnov.smartest.plugin";
     private static final FilenameFilter FILENAME_FILTER = new PatternFilenameFilter(".*\\.jar");
 
@@ -38,6 +41,7 @@ public class PluginLoader {
 
     public Language language() throws PluginException {
         if (language == null) {
+            logger.debug("loading language");
             language = initialize(configuration.language(), Language.class);
         }
         return language;
@@ -45,6 +49,7 @@ public class PluginLoader {
 
     public TestFramework testFramework() throws PluginException {
         if (testFramework == null) {
+            logger.debug("loading test framework");
             testFramework = initialize(configuration.testFramework(), TestFramework.class);
         }
         return testFramework;
@@ -52,6 +57,7 @@ public class PluginLoader {
 
     public ProductionTool productionTool() throws PluginException {
         if (productionTool == null) {
+            logger.debug("loading production tool");
             productionTool = initialize(configuration.productionTool(), ProductionTool.class);
             productionTool.setUp(configuration.projectPath());
         }
@@ -60,6 +66,7 @@ public class PluginLoader {
 
     public VCS vcs() throws PluginException {
         if (vcs == null) {
+            logger.debug("loading vcs");
             vcs = initialize(configuration.vcs(), VCS.class);
             vcs.setUp(configuration.gitPath());
         }
@@ -69,8 +76,11 @@ public class PluginLoader {
     private <T extends Plugin> T initialize(String identifier, Class<T> cls) throws PluginException {
         File[] files = listJar();
         Set<Class<? extends T>> classes = loadFromSmartest(cls);
+        logger.info("Default plugin found in Smartest : " + classes);
+        logger.info("Plugin found in plugin directory : " + Arrays.asList(files));
         Optional<? extends T> plugin = processClasses(classes, identifier);
         if (plugin.isPresent()) {
+            logger.info("Use \"" + plugin.get() + "\" as \"" + identifier + "\"");
             return plugin.get();
         }
         for (File jar : files) {
@@ -111,18 +121,19 @@ public class PluginLoader {
                 instances.add(aClass.newInstance());
             }
             catch (InstantiationException | IllegalAccessException e) {
+                logger.error(e);
                 throw new LoadPluginException(e);
             }
         }
         return instances;
     }
 
-    private File[] listJar() throws PluginException {
+    private File[] listJar() {
         File dir = new File(configuration.pluginPath());
         File[] files = dir.listFiles(FILENAME_FILTER);
         if (files == null) {
-            throw new SearchPluginException(
-                    new FileNotFoundException("Directory " + dir.getPath() + " doesn't exists"));
+            logger.warn("Directory \"" + configuration.pluginPath() + "\" doesn't exists");
+            files = new File[0];
         }
         return files;
     }
@@ -133,6 +144,7 @@ public class PluginLoader {
             return reflectPlugin(cls, url);
         }
         catch (MalformedURLException e) {
+            logger.error(e);
             throw new LoadPluginException(e);
         }
     }
@@ -143,6 +155,7 @@ public class PluginLoader {
             return reflections.getSubTypesOf(cls);
         }
         catch (IOException e) {
+            logger.error(e);
             throw new SearchPluginException(e);
         }
     }
