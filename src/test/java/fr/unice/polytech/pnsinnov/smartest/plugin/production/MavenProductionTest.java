@@ -57,8 +57,6 @@ public class MavenProductionTest extends SuperClone {
             srcF.add(src.replace(".java", ".class"));
         }
         List<String> srcO = new ArrayList<>(Arrays.asList(srcOutPut.list()));
-        System.out.println(srcF);
-        System.out.println(srcO);
         assertTrue(srcF.containsAll(srcO));
         assertTrue(srcO.containsAll(srcF));
 

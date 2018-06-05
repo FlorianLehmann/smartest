@@ -57,6 +57,7 @@ public class JavaLanguage implements Language {
             return new HashSet<>();
         }
         try {
+            diff.getTestsRelatedToChanges().forEach(test -> System.out.println(test.getIdentifier()));
             return diff.getTestsRelatedToChanges();
         } catch (IOException e) {
             e.printStackTrace();

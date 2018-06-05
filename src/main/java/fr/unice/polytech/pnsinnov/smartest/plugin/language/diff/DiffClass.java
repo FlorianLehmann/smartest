@@ -1,5 +1,6 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.diff;
 
+import fr.smartest.plugin.Test;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.factory.TreeFactory;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Dependency;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Tree;

@@ -15,12 +15,12 @@ public class TestImplementation implements fr.smartest.plugin.Test {
 
     @Override
     public Priority getPriority() {
-        return null;
+        return priority;
     }
 
     @Override
     public String getIdentifier() {
-        return null;
+        return Identifier;
     }
 
     @Override
