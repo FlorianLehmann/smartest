@@ -9,6 +9,8 @@ import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.InvalidScopeTest
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.Scope;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.factory.TreeFactory;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.persistence.Database;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,12 +22,17 @@ import java.util.Set;
 
 public class JavaLanguage implements Language {
 
+    private static final Logger logger = LogManager.getLogger(JavaLanguage.class);
+
     private List<Module> modules;
 
     @Override
     public void setUp(List<Module> modules) {
         this.modules = modules;
         if (!Database.getInstance().checkExistence()) {
+
+            logger.info("Building trees");
+
             List<Path> srcDirPaths = new ArrayList<>();
             List<Path> testDirPaths = new ArrayList<>();
             for (Module module : modules) {
@@ -36,11 +43,8 @@ public class JavaLanguage implements Language {
             DirectoryExplorer directoryExplorer = new DirectoryExplorer();
             List<File> javaFiles = directoryExplorer.explore(srcDirPaths);
             TreeFactory treeFactory = new TreeFactory(Database.getInstance().getTree());
-            try {
-                treeFactory.generateTrees(javaFiles, javaFiles);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            treeFactory.generateTrees(javaFiles, javaFiles);
+
 
             List<File> javaTestFiles = directoryExplorer.explore(testDirPaths);
             treeFactory = new TreeFactory(Database.getInstance().getTests());
@@ -48,11 +52,7 @@ public class JavaLanguage implements Language {
             List<File> common = new ArrayList<>();
             common.addAll(javaFiles);
             common.addAll(javaTestFiles);
-            try {
-                treeFactory.generateTrees(javaTestFiles, common);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            treeFactory.generateTrees(javaTestFiles, common);
         }
     }
 

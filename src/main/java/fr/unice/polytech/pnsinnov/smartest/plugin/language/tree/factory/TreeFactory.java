@@ -18,6 +18,8 @@ import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Dependency
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Method;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Tree;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.persistence.Database;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,13 +33,14 @@ import java.util.Set;
 
 public class TreeFactory {
 
+    private static final Logger logger = LogManager.getLogger(TreeFactory.class);
     private List<Tree> trees;
 
     public TreeFactory(List<Tree> trees) {
         this.trees = trees;
     }
 
-    public void generateTrees(List<File> files, List<File> src) throws IOException {
+    public void generateTrees(List<File> files, List<File> src) {
 
         List<Path> javaFiles = convertFilesToPath(files);
         List<Path> javaSrcFiles = convertFilesToPath(src);
@@ -45,8 +48,14 @@ public class TreeFactory {
 
         for (Path path : javaFiles) {
 
-            CompilationUnit cu = JavaParser.parse(Paths.get(path.toString()));
+            CompilationUnit cu = null;
+            try {
+                cu = JavaParser.parse(Paths.get(path.toString()));
+            } catch (IOException e) {
+                logger.info("Invalid file " + path.toString(), e);
+            }
 
+            CompilationUnit finalCu = cu;
             cu.findAll(ClassOrInterfaceDeclaration.class).forEach(ae -> {
                 ResolvedReferenceTypeDeclaration resolvedType = ae.resolve();
 
@@ -57,7 +66,7 @@ public class TreeFactory {
 
                 Class cls = lookForClassName(resolvedType, dependencies, methods);
 
-                lookForDependencyInsideMethod(cu, cls);
+                lookForDependencyInsideMethod(finalCu, cls);
 
                 Tree file = new Tree(cls, path);
 
@@ -128,7 +137,7 @@ public class TreeFactory {
                 dependencies.add(new Dependency(field.getType().describe()));
             }
         } catch (Exception e) {
-
+            logger.info("Unable to get Fields of the class");
         }
         return dependencies;
     }
