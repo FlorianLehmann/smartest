@@ -96,7 +96,7 @@ public class JavaParserTypeSolverFiles implements TypeSolver {
 
         String path = "";
         for (String filepath : filesPath) {
-            if (filepath.endsWith(name.replace('.', '/') + ".java")) {
+            if (filepath.endsWith(Paths.get(name.replace(".", "/")).toString() + ".java")) {
                 path = filepath;
                 break;
             }
