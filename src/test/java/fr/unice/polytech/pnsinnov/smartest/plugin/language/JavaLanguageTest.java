@@ -125,36 +125,14 @@ public class JavaLanguageTest extends SuperClone {
         Mockito.when(diff.getStatus()).thenReturn(Diff.Status.MODIFIED);
         Mockito.when(diff.getPath()).thenReturn(SuperClone.directory.getAbsolutePath() + "/src/main/java/fr/unice/polytech/pnsinnov/Student.java");
 
-        // create the new file
-        File fileModified = new File(SuperClone.directory.getAbsolutePath() + "/src/main/java/fr/unice/polytech/pnsinnov/Foo.java");
-        PrintWriter writer = new PrintWriter(fileModified, "UTF-8");
-        writer.println("ppackage fr.unice.polytech.pnsinnov;\n" +
-                "\n" +
-                "public class Student {\n" +
-                "\n" +
-                "    private String name;\n" +
-                "\n" +
-                "    public Student(String name) {\n" +
-                "        this.name = name;\n" +
-                "    }\n" +
-                "\n" +
-                "    public boolean isSmart() {\n" +
-                "        return false;\n" +
-                "    }\n" +
-                "}");
-        writer.close();
-
         Set<Diff> diffs = new HashSet<>();
         diffs.add(diff);
-
 
         Set<TestImplementation> testImplementations = new HashSet<>();
         testImplementations.add(new TestImplementation("fr.unice.polytech.pnsinnov.StudentTest"));
         testImplementations.add(new TestImplementation("fr.unice.polytech.pnsinnov.SchoolTest"));
         assertEquals(2, javaLanguage.getTestsRelatedToChanges("CLASS", diffs).size());
         assertEquals(testImplementations ,javaLanguage.getTestsRelatedToChanges("CLASS", diffs));
-
-        System.out.println(javaLanguage.getTestsRelatedToChanges("CLASS", diffs));
     }
 
     /*@Test

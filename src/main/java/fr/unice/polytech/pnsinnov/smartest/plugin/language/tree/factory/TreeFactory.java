@@ -68,7 +68,6 @@ public class TreeFactory {
         }
 
         refineDependency();
-
     }
 
     private void refineDependency() {
