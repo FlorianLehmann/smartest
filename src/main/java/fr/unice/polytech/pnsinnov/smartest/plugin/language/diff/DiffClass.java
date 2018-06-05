@@ -1,7 +1,6 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.diff;
 
 import fr.smartest.plugin.Module;
-import fr.smartest.plugin.Test;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.factory.TreeFactory;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Dependency;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.model.Tree;
@@ -31,7 +30,8 @@ public class DiffClass implements Diff {
 
         List<Tree> newSrcClass = new ArrayList<>();
         new TreeFactory(newSrcClass).generateTrees(getSourceFileModifiedOrAdded(modules), getSourceFileModifiedOrAdded(modules));
-        // on ne différencie pas les tests du code source
+        List<Tree> newTestsClass = new ArrayList<>();
+        new TreeFactory(newTestsClass).generateTrees(getTestsFileModifiedOrAdded(modules), getTestsFileModifiedOrAdded(modules));
 
         List<String> classNames = new ArrayList<>();
         for (Tree tree : newSrcClass) {
@@ -48,9 +48,15 @@ public class DiffClass implements Diff {
             }
         }
 
-        //WARNING il ajoute le nom dans les classes
+        for (Tree tree : newTestsClass) {
+            for (String name : classNames) {
+                if (tree.getCls().getAllDependencies().contains(new Dependency(name))) {
+                    toRun.add(new TestImplementation(tree.getCls().getName()));
+                }
+            }
+        }
+
         database.setClassName(oldClassNames);
-        //fileDiff.forEach(diff -> System.out.println(diff.getPath()));
 
         return toRun;
 
@@ -61,12 +67,26 @@ public class DiffClass implements Diff {
         fileDiff.forEach(fileDiff -> {
             if (fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.ADDED) ||
                     fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.MODIFIED)) {
-                /*for (Module module : modules) {
+                for (Module module : modules) {
                     if (fileDiff.getPath().contains(module.getSrcPath())) {
-                        System.out.println("TEST" + fileDiff.getPath());*/
                         files.add(new File(fileDiff.getPath()));
-                    /*}
-                }*/
+                    }
+                }
+            }
+        });
+        return files;
+    }
+
+    private List<File> getTestsFileModifiedOrAdded(List<Module> modules) {
+        List<File> files = new ArrayList<>();
+        fileDiff.forEach(fileDiff -> {
+            if (fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.ADDED) ||
+                    fileDiff.getStatus().equals(fr.smartest.plugin.Diff.Status.MODIFIED)) {
+                for (Module module : modules) {
+                    if (fileDiff.getPath().contains(module.getTestPath())) {
+                        files.add(new File(fileDiff.getPath()));
+                    }
+                }
             }
         });
         return files;
