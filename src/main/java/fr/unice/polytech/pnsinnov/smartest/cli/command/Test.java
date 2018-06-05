@@ -1,6 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.cli.command;
 
 import fr.smartest.exceptions.PluginException;
+import fr.smartest.plugin.TestReport;
 import fr.unice.polytech.pnsinnov.smartest.cli.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -17,7 +18,9 @@ public class Test extends Command {
     public void run() {
         logger.info("commit option has been selected on scope \"" + scope + "\"");
         try {
-            smartest.test(scope);
+            for (TestReport testReport : smartest.test(scope)) {
+                context.out().println(testReport.getTest().getIdentifier() + ": " + testReport.getResult());
+            }
         }
         catch (PluginException e) {
             context.err().print("An error occurred: ");
