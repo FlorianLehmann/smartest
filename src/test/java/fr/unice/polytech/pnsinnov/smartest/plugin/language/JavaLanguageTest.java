@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,8 +32,8 @@ public class JavaLanguageTest extends SuperClone {
     public void shouldCreateTree() {
         Module module = Mockito.mock(Module.class);
         List<Module> modules = new ArrayList<>();
-        Mockito.when(module.getSrcPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/main/java"));
-        Mockito.when(module.getTestPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/test/java"));
+        Mockito.when(module.getSrcPath()).thenReturn(Paths.get(SuperClone.directory.getAbsolutePath(), "src/main/java"));
+        Mockito.when(module.getTestPath()).thenReturn(Paths.get(SuperClone.directory.getAbsolutePath(), "src/test/java"));
         modules.add(module);
         javaLanguage.setUp(modules);
 
@@ -55,10 +56,10 @@ public class JavaLanguageTest extends SuperClone {
         shouldCreateTree();
         Diff diff = Mockito.mock(Diff.class);
         Mockito.when(diff.getStatus()).thenReturn(Diff.Status.ADDED);
-        Mockito.when(diff.getPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/main/java/fr/unice/polytech/pnsinnov/Foo.java"));
+        Mockito.when(diff.getPath()).thenReturn(Paths.get(SuperClone.directory.getAbsolutePath(),"src/main/java/fr/unice/polytech/pnsinnov/Foo.java"));
 
         // create the new file
-        File fileAdded = new File(SuperClone.directory.getAbsolutePath() + "/src/main/java/fr/unice/polytech/pnsinnov/Foo.java");
+        File fileAdded = new File(Paths.get(SuperClone.directory.getAbsolutePath(),"/src/main/java/fr/unice/polytech/pnsinnov/Foo.java").toAbsolutePath().toString());
         fileAdded.createNewFile();
         PrintWriter writer = new PrintWriter(fileAdded, "UTF-8");
         writer.println("package fr.unice.polytech.pnsinnov;\n" +
@@ -81,8 +82,8 @@ public class JavaLanguageTest extends SuperClone {
     public void shouldGetTestsRelatedToModifiedFile() throws FileNotFoundException, UnsupportedEncodingException {
         Module module = Mockito.mock(Module.class);
         List<Module> modules = new ArrayList<>();
-        Mockito.when(module.getSrcPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/main/java"));
-        Mockito.when(module.getTestPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/test/java"));
+        Mockito.when(module.getSrcPath()).thenReturn(Paths.get(SuperClone.directory.getAbsolutePath(),"src/main/java"));
+        Mockito.when(module.getTestPath()).thenReturn(Paths.get(SuperClone.directory.getAbsolutePath(),"src/test/java"));
         modules.add(module);
         javaLanguage.setUp(modules);
 
