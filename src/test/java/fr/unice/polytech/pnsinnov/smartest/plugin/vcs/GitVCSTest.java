@@ -30,7 +30,7 @@ class GitVCSTest extends SuperClone {
     @BeforeEach
     public void setup(){
         gitVCS = new GitVCS();
-        gitVCS.setUp(Paths.get(""));
+        gitVCS.setUp(Paths.get(".git"));
 
         try {
             toCreate = new File("src/test/resources/emptyTestFile.txt");
@@ -89,7 +89,7 @@ class GitVCSTest extends SuperClone {
     void commit() {
         Git git = null;
 
-        this.gitVCS.setUp(SuperClone.directory.toPath());
+        this.gitVCS.setUp(Paths.get(SuperClone.directory.getAbsolutePath(), ".git"));
 
         try {
             git = Git.open(new File(SuperClone.directory.getAbsolutePath(), ".git"));

@@ -29,7 +29,7 @@ public class GitVCS implements VCS {
         Git git = null;
 
         try {
-            git = Git.open(new File(gitPath.toAbsolutePath().toString(), ".git"));
+            git = Git.open(new File(gitPath.toAbsolutePath().toString()));
             AddCommand add = git.add();
 
             for (String path : git.status().call().getUncommittedChanges()) {
@@ -54,7 +54,7 @@ public class GitVCS implements VCS {
         Git git = null;
 
         try {
-            git = Git.open(new File(gitPath.toAbsolutePath().toString(), ".git"));
+            git = Git.open(new File(gitPath.toAbsolutePath().toString()));
 
             HashSet<Diff> diffs = new HashSet<>();
 
