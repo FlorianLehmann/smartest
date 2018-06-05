@@ -97,10 +97,10 @@ public class JavaLanguageTest extends SuperClone {
 
         Diff diff = Mockito.mock(Diff.class);
         Mockito.when(diff.getStatus()).thenReturn(Diff.Status.MODIFIED);
-        Mockito.when(diff.getPath()).thenReturn(SuperClone.directory.toPath().resolveSibling("src/main/java/fr/unice/polytech/pnsinnov/Student.java"));
+        Mockito.when(diff.getPath()).thenReturn(Paths.get(SuperClone.directory.getAbsolutePath(),"src/main/java/fr/unice/polytech/pnsinnov/Student.java"));
 
         // create the new file
-        File fileModified = new File(SuperClone.directory.getAbsolutePath() + "/src/main/java/fr/unice/polytech/pnsinnov/Foo.java");
+        File fileModified = new File(Paths.get(SuperClone.directory.getAbsolutePath(),"/src/main/java/fr/unice/polytech/pnsinnov/Foo.java").toAbsolutePath().toString());
         PrintWriter writer = new PrintWriter(fileModified, "UTF-8");
         writer.println("package fr.unice.polytech.pnsinnov;\n" +
                 "\n" +
