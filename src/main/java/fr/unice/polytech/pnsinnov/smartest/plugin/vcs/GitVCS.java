@@ -11,17 +11,18 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
 public class GitVCS implements VCS {
 
     private Path gitPath;
+    private Path projectPath;
 
     @Override
-    public void setUp(Path path) {
-        this.gitPath = path;
+    public void setUp(Path gitPath, Path projectPath) {
+        this.gitPath = gitPath;
+        this.projectPath = projectPath;
     }
 
     @Override
@@ -38,12 +39,15 @@ public class GitVCS implements VCS {
 
             add.call();
             git.commit().setMessage(message).call();
-        } catch (GitAPIException e) {
+        }
+        catch (GitAPIException e) {
             throw new GitException(e);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new GitNotFoundException(e);
-        } finally {
-            if (git != null){
+        }
+        finally {
+            if (git != null) {
                 git.close();
             }
         }
@@ -52,34 +56,32 @@ public class GitVCS implements VCS {
     @Override
     public Set<Diff> diff() throws VCSException {
         Git git = null;
-
         try {
             git = Git.open(new File(gitPath.toAbsolutePath().toString()));
 
             HashSet<Diff> diffs = new HashSet<>();
 
-            for (String path :
-                    git.status().call().getAdded()) {
-                diffs.add(new GitDiff(Paths.get(path), Diff.Status.ADDED));
+            for (String path : git.status().call().getAdded()) {
+                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.ADDED));
             }
 
-            for (String path :
-                    git.status().call().getRemoved()) {
-                diffs.add(new GitDiff(Paths.get(path), Diff.Status.REMOVED));
+            for (String path : git.status().call().getRemoved()) {
+                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.REMOVED));
             }
 
-            for (String path :
-                    git.status().call().getModified()) {
-                diffs.add(new GitDiff(Paths.get(path), Diff.Status.MODIFIED));
+            for (String path : git.status().call().getModified()) {
+                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.MODIFIED));
             }
-
             return diffs;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new GitNotFoundException(e);
-        } catch (GitAPIException e) {
+        }
+        catch (GitAPIException e) {
             throw new GitException(e);
-        } finally {
-            if (git != null){
+        }
+        finally {
+            if (git != null) {
                 git.close();
             }
         }

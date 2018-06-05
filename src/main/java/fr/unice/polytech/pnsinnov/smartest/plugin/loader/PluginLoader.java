@@ -68,7 +68,7 @@ public class PluginLoader {
         if (vcs == null) {
             logger.debug("loading vcs");
             vcs = initialize(configuration.vcs(), VCS.class);
-            vcs.setUp(configuration.gitPath());
+            vcs.setUp(configuration.gitPath(), configuration.projectPath());
         }
         return vcs;
     }

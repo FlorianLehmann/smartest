@@ -30,7 +30,7 @@ class GitVCSTest extends SuperClone {
     @BeforeEach
     public void setup(){
         gitVCS = new GitVCS();
-        gitVCS.setUp(Paths.get(".git"));
+        gitVCS.setUp(Paths.get(".git"), Paths.get(""));
 
         try {
             toCreate = new File("src/test/resources/emptyTestFile.txt");
@@ -69,8 +69,7 @@ class GitVCSTest extends SuperClone {
         try {
             Set<Path> paths = new HashSet<>();
 
-            for (Diff diff:
-                 this.gitVCS.diff()) {
+            for (Diff diff : this.gitVCS.diff()) {
                 paths.add(diff.getPath());
             }
             assertTrue(paths.contains(toCreate.toPath()));
@@ -89,7 +88,8 @@ class GitVCSTest extends SuperClone {
     void commit() {
         Git git = null;
 
-        this.gitVCS.setUp(Paths.get(SuperClone.directory.getAbsolutePath(), ".git"));
+        this.gitVCS.setUp(Paths.get(SuperClone.directory.getAbsolutePath(), ".git"), Paths.get(SuperClone.directory
+                .getAbsolutePath()));
 
         try {
             git = Git.open(new File(SuperClone.directory.getAbsolutePath(), ".git"));

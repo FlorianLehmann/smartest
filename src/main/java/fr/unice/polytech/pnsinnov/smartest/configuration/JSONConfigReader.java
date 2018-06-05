@@ -10,7 +10,6 @@ import org.json.simple.parser.ParseException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class JSONConfigReader implements ConfigReader {
     private static final Logger logger = LogManager.getLogger(JSONConfigReader.class);
@@ -21,9 +20,9 @@ public class JSONConfigReader implements ConfigReader {
         JSONObject config = readJSONFromFile(path);
 
         return new ConfigurationHolder(
-                Paths.get(getFieldFromConfig(ConfigKey.VCS_PATH, config)).toAbsolutePath(),
-                Paths.get(getFieldFromConfig(ConfigKey.PLUGIN_PATH, config)).toAbsolutePath(),
-                Paths.get(getFieldFromConfig(ConfigKey.PROJECT_PATH, config)).toAbsolutePath(),
+                path.getParent().resolve(getFieldFromConfig(ConfigKey.VCS_PATH, config)).toAbsolutePath(),
+                path.getParent().resolve(getFieldFromConfig(ConfigKey.PLUGIN_PATH, config)).toAbsolutePath(),
+                path.getParent().resolve(getFieldFromConfig(ConfigKey.PROJECT_PATH, config)).toAbsolutePath(),
                 getFieldFromConfig(ConfigKey.LANGUAGE, config),
                 getFieldFromConfig(ConfigKey.PRODUCTION_TOOL, config),
                 getFieldFromConfig(ConfigKey.TEST_FRAMEWORK, config),

@@ -55,7 +55,6 @@ public class DiffClass implements Diff {
                 }
             }
         }
-
         database.setClassName(oldClassNames);
 
         return toRun;
