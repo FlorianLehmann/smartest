@@ -3,20 +3,18 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.language;
 import fr.smartest.plugin.Diff;
 import fr.smartest.plugin.Module;
 import fr.unice.polytech.pnsinnov.smartest.SuperClone;
-import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.Scope;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.TestImplementation;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.persistence.Database;
-import fr.unice.polytech.pnsinnov.smartest.plugin.production.MavenModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.*;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JavaLanguageTest extends SuperClone {
 
@@ -79,31 +77,6 @@ public class JavaLanguageTest extends SuperClone {
 
     }
 
-    /*@Test
-    public void shouldNotGetTestsRelatedToAddedFileAndTest() throws IOException {
-        Diff diff = Mockito.mock(Diff.class);
-        Mockito.when(diff.getStatus()).thenReturn(Diff.Status.ADDED);
-        Mockito.when(diff.getPath()).thenReturn(SuperClone.directory.getAbsolutePath() + "/src/main/java/fr/unice/polytech/pnsinnov/Foo.java");
-
-        // create the new file
-        File fileAdded = new File(SuperClone.directory.getAbsolutePath() + "/src/main/java/fr/unice/polytech/pnsinnov/Foo.java");
-        fileAdded.createNewFile();
-        PrintWriter writer = new PrintWriter("Foo.java", "UTF-8");
-        writer.println("package fr.unice.polytech.pnsinnov;\n" +
-                "\n" +
-                "public class Foo {\n" +
-                "\n" +
-                "   private Student student;" +
-                "\n" +
-                "}\n");
-        writer.close();
-
-        Set<Diff> diffs = new HashSet<>();
-        diffs.add(diff);
-
-        System.out.println(javaLanguage.getTestsRelatedToChanges("CLASS", diffs));
-    }*/
-
     @Test
     public void shouldGetTestsRelatedToModifiedFile() throws FileNotFoundException, UnsupportedEncodingException {
         Module module = Mockito.mock(Module.class);
@@ -134,16 +107,5 @@ public class JavaLanguageTest extends SuperClone {
         assertEquals(2, javaLanguage.getTestsRelatedToChanges("CLASS", diffs).size());
         assertEquals(testImplementations ,javaLanguage.getTestsRelatedToChanges("CLASS", diffs));
     }
-
-    //TODO si il n'arrive pas à résoudre le lien d'une classe est qu'une execption est levé, il ne cherche pas les suivantes (ex extends de tree factory (TreeFactoryTests)
-    /*@Test
-    public void shouldGetTestsRelatedToRemovedFile() {
-        Diff diff = Mockito.mock(Diff.class);
-        Mockito.when(diff.getStatus()).thenReturn(Diff.Status.ADDED);
-        //Mockito.when(diff.getPath()).thenReturn();
-        Set<Diff> diffs = new HashSet<>();
-        diffs.add(diff);
-        javaLanguage.getTestsRelatedToChanges("class", diffs);
-    }*/
 
 }
