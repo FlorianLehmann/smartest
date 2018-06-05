@@ -16,7 +16,7 @@ public class Test extends Command {
 
     @Override
     public void run() {
-        logger.info("commit option has been selected on scope \"" + scope + "\"");
+        logger.info("test option has been selected on scope \"" + scope + "\"");
         try {
             for (TestReport testReport : smartest.test(scope)) {
                 context.out().println(testReport.getTest().getIdentifier() + ": " + testReport.getResult());

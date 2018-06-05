@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
 public class JSONConfigReader implements ConfigReader {
@@ -18,16 +19,27 @@ public class JSONConfigReader implements ConfigReader {
     public Configuration readConfig(Path path) {
         logger.info("Reading " + path + " as a json file");
         JSONObject config = readJSONFromFile(path);
+        Path realPath = getRealPath(path);
 
         return new ConfigurationHolder(
-                path.getParent().resolve(getFieldFromConfig(ConfigKey.VCS_PATH, config)).toAbsolutePath(),
-                path.getParent().resolve(getFieldFromConfig(ConfigKey.PLUGIN_PATH, config)).toAbsolutePath(),
-                path.getParent().resolve(getFieldFromConfig(ConfigKey.PROJECT_PATH, config)).toAbsolutePath(),
+                realPath.getParent().resolve(getFieldFromConfig(ConfigKey.VCS_PATH, config)).toAbsolutePath(),
+                realPath.getParent().resolve(getFieldFromConfig(ConfigKey.PLUGIN_PATH, config)).toAbsolutePath(),
+                realPath.getParent().resolve(getFieldFromConfig(ConfigKey.PROJECT_PATH, config)).toAbsolutePath(),
                 getFieldFromConfig(ConfigKey.LANGUAGE, config),
                 getFieldFromConfig(ConfigKey.PRODUCTION_TOOL, config),
                 getFieldFromConfig(ConfigKey.TEST_FRAMEWORK, config),
                 getFieldFromConfig(ConfigKey.VCS, config)
         );
+    }
+
+    private Path getRealPath(Path path) {
+        try {
+            return path.toRealPath(LinkOption.NOFOLLOW_LINKS);
+        }
+        catch (IOException e) {
+            logger.error(e);
+            return path.toAbsolutePath();
+        }
     }
 
     private String getFieldFromConfig(ConfigKey key, JSONObject config){
