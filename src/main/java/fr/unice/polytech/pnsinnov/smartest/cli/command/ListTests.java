@@ -7,6 +7,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import picocli.CommandLine;
 
+import java.util.Set;
+
 @CommandLine.Command(name = "list-tests", description = "List the tests that cover the changes between commits.")
 public class ListTests extends Command {
     private static final Logger logger = LogManager.getLogger(ListTests.class);
@@ -17,7 +19,11 @@ public class ListTests extends Command {
     public void run() {
         logger.info("list-tests option has been selected on scope \"" + scope + "\"");
         try {
-            for (Test test : smartest.listTests(scope)) {
+            Set<Test> tests = smartest.listTests(scope);
+            if (tests.isEmpty()) {
+                context.out().println("No change impacting tests was detected");
+            }
+            for (Test test : tests) {
                 context.out().println(test.getIdentifier());
             }
         }
