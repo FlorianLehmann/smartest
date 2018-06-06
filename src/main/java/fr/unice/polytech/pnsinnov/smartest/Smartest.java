@@ -25,9 +25,7 @@ public class Smartest {
         ProductionTool productionTool = pluginLoader.productionTool();
         language.setUp(productionTool.getModules());
         VCS vcs = pluginLoader.vcs();
-        Set<Test> testsRelatedToChanges = language.getTestsRelatedToChanges(scope, vcs.diff());
-        language.save();
-        return testsRelatedToChanges;
+        return language.getTestsRelatedToChanges(scope, vcs.diff());
     }
 
     public void commit(String scope, String message) throws SmartestException {
@@ -44,6 +42,7 @@ public class Smartest {
         }
 
         pluginLoader.vcs().commit(message);
+        pluginLoader.language().save();
     }
 
     public Set<TestReport> test(String scope) throws PluginException {
