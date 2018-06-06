@@ -44,7 +44,12 @@ public class SuperClone {
         try {
             FileUtils.deleteDirectory(directory);
         } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e1) {
+                //Tmp wont be deleted..
+            }
+            deleteAll();
         }
     }
 

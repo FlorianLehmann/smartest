@@ -21,7 +21,7 @@ public class ListTests extends Command {
         try {
             Set<Test> tests = smartest.listTests(scope);
             if (tests.isEmpty()) {
-                context.out().println("No change impacting tests was detected");
+                context.out().println("No change impacting tests were detected");
             }
             for (Test test : tests) {
                 context.out().println(test.getIdentifier());
