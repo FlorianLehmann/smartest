@@ -24,7 +24,7 @@ public class Test extends Command {
             for (TestReport testReport : testReports) {
                 context.out().println(testReport.getTest().getIdentifier() + ": " + testReport.getResult());
             }
-            context.out().println(testReports.size() + " tests has been executed successfully");
+            context.out().println(testReports.size() + " tests has been executed");
         }
         catch (PluginException e) {
             context.err().print("An error occurred: ");
