@@ -33,6 +33,6 @@ class JUnit5RunnerTest extends SuperClone {
         junitTests.add(new JunitTest(Priority.HIGH, "fr.unice.polytech.pnsinnov.SchoolTest"));
         Set<TestReport> run = jUnit5Runner.run(junitTests, mavenProduction.getModules());
         assertFalse(run.isEmpty());
-        assertTrue(run.stream().allMatch(testReport -> testReport.getResult() == TestReport.Status.SUCESSFUL));
+        assertTrue(run.stream().allMatch(testReport -> testReport.getResult() == TestReport.Status.SUCCESSFUL));
     }
 }

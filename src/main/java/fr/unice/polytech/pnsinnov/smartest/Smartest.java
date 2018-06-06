@@ -34,7 +34,7 @@ public class Smartest {
         Set<TestReport> test = test(scope);
         Set<TestReport> failures = new HashSet<>();
         for (TestReport testReport : test) {
-            if (testReport.getResult() != TestReport.Status.SUCESSFUL) {
+            if (testReport.getResult() != TestReport.Status.SUCCESSFUL) {
                 failures.add(testReport);
             }
         }
@@ -42,6 +42,7 @@ public class Smartest {
             logger.warn("Some tests failed : " + failures);
             throw new TestFailureException(failures);
         }
+
         pluginLoader.vcs().commit(message);
     }
 

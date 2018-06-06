@@ -84,7 +84,7 @@ public class JUnit5Runner implements TestFramework {
 
     private TestReport createTestReportFrom(Test test, TestExecutionSummary summary) {
         logger.debug("creating test report from test=" + test + " and summary=" + summary);
-        TestReport.Status status = TestReport.Status.SUCESSFUL;
+        TestReport.Status status = TestReport.Status.SUCCESSFUL;
         Throwable throwable = null;
         for (TestExecutionSummary.Failure failure : summary.getFailures()) {
             status = TestReport.Status.FAILURE;
