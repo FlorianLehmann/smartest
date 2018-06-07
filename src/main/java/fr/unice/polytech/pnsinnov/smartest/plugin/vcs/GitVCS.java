@@ -7,9 +7,14 @@ import fr.smartest.plugin.VCS;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.*;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.TreeWalk;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,15 +67,15 @@ public class GitVCS implements VCS {
             HashSet<Diff> diffs = new HashSet<>();
 
             for (String path : git.status().call().getAdded()) {
-                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.ADDED));
+                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.ADDED, ""));
             }
 
             for (String path : git.status().call().getRemoved()) {
-                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.REMOVED));
+                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.REMOVED, getContentFromGit(git, path)));
             }
 
             for (String path : git.status().call().getModified()) {
-                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.MODIFIED));
+                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.MODIFIED, getContentFromGit(git, path)));
             }
             return diffs;
         }
@@ -84,6 +89,28 @@ public class GitVCS implements VCS {
             if (git != null) {
                 git.close();
             }
+        }
+    }
+
+    private String getContentFromGit(Git git, String path) throws GitException {
+        Repository repository = git.getRepository();
+
+        ObjectId lastCommitId = null;
+        try {
+            lastCommitId = repository.resolve(Constants.HEAD);
+
+            RevWalk revWalk = new RevWalk(repository);
+            RevCommit commit = revWalk.parseCommit(lastCommitId);
+
+            TreeWalk treeWalk = TreeWalk.forPath(git.getRepository(), path, commit.getTree());
+
+            ObjectId blobId = treeWalk.getObjectId(0);
+            ObjectReader objectReader = git.getRepository().newObjectReader();
+            ObjectLoader objectLoader = objectReader.open(blobId);
+            byte[] bytes = objectLoader.getBytes();
+            return new String(bytes, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new GitException(e);
         }
     }
 
