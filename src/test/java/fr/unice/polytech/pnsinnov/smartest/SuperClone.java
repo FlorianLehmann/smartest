@@ -40,17 +40,8 @@ public class SuperClone {
     }
 
     @AfterAll
-    public static void deleteAll(){
-        try {
-            FileUtils.deleteDirectory(directory);
-        } catch (IOException e) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e1) {
-                //Tmp wont be deleted..
-            }
-            deleteAll();
-        }
+    public static void deleteAll() throws IOException {
+        FileUtils.deleteDirectory(directory);
     }
 
 }

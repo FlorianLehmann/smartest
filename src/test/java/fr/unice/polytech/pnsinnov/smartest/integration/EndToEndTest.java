@@ -2,27 +2,24 @@ package fr.unice.polytech.pnsinnov.smartest.integration;
 
 
 import fr.smartest.plugin.TestReport;
+import fr.unice.polytech.pnsinnov.smartest.Main;
 import fr.unice.polytech.pnsinnov.smartest.SuperClone;
-import fr.unice.polytech.pnsinnov.smartest.plugin.production.PathPlugin;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.maven.shared.invoker.*;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.revwalk.RevWalk;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,20 +33,10 @@ class EndToEndTest extends SuperClone{
 
     private Path tmp2Path = Paths.get("src/test/resources/tmp2");
 
+    private ByteArrayOutputStream out;
+
     @BeforeAll
     static void setupEndToEnd(){
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setPomFile(new File(Paths.get("").toAbsolutePath().toString(), PathPlugin.POM_FILE.getName()));
-        request.setGoals(Arrays.asList("clean", "package", "-DskipTests"));
-        request.setOutputHandler(s -> {});
-        request.setBatchMode(true);
-        Invoker invoker = new DefaultInvoker();
-        try {
-            invoker.execute(request);
-        } catch (MavenInvocationException e) {
-            //Not compiled...
-        }
-
         try {
             contentStudent = new String(Files.readAllBytes(new File(SuperClone.directory.getAbsolutePath(), "src/main/java/fr/unice/polytech/pnsinnov/Student.java").toPath()));
             contentSchool = new String(Files.readAllBytes(new File(SuperClone.directory.getAbsolutePath(), "src/main/java/fr/unice/polytech/pnsinnov/School.java").toPath()));
@@ -65,6 +52,10 @@ class EndToEndTest extends SuperClone{
         } catch (IOException e) {
             //Creation failed
         }
+
+        out = new ByteArrayOutputStream();
+
+        System.setOut(new PrintStream(out));
     }
 
     private ObjectId getCurrentGitHead(File gitFile){
@@ -89,19 +80,13 @@ class EndToEndTest extends SuperClone{
     void commitFailure(){
         ObjectId beforeCommit = getCurrentGitHead(new File(this.tmp2Path.toAbsolutePath().toString(), ".git"));
 
-        String smartOutput;
-
         try {
-            ProcessBuilder pb = new ProcessBuilder("java", "-jar", "smartest-jar-with-dependencies.jar", "--config-path=\"../src/test/resources/tmp2/resources/config.smt\"", "commit", "-m", "\"bonjour\"");
-            pb.directory(new File(Paths.get("target").toAbsolutePath().toString()));
-
             FileUtils.writeByteArrayToFile(new File(tmp2Path.toAbsolutePath().toString(), "src/main/java/fr/unice/polytech/pnsinnov/Student.java"), contentStudent.replaceFirst("true", "false").getBytes(), false);
 
-            Process p = pb.start();
+            Main.main(new String[]{"--config-path=\"src/test/resources/tmp2/resources/config.smt\"", "commit", "-m", "bonjour" });
 
-            smartOutput = flattenString(IOUtils.toString(p.getInputStream(), Charset.defaultCharset()));
+            assertTrue(out.toString().startsWith("Code has not been committed due to test failure"));
 
-            assertTrue(smartOutput.startsWith("Code has not been committed due to test failure"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,20 +101,12 @@ class EndToEndTest extends SuperClone{
     void commitSuccess(){
         ObjectId beforeCommit = getCurrentGitHead(new File(this.tmp2Path.toAbsolutePath().toString(), ".git"));
 
-        String smartOutput;
-
         try {
-            ProcessBuilder pb = new ProcessBuilder("java", "-jar", "smartest-jar-with-dependencies.jar", "--config-path=\"../src/test/resources/tmp2/resources/config.smt\"", "commit", "-m", "\"bonjour\"");
-            pb.directory(new File(Paths.get("target").toAbsolutePath().toString()));
-
             FileUtils.writeByteArrayToFile(new File(tmp2Path.toAbsolutePath().toString(), "src/main/java/fr/unice/polytech/pnsinnov/Student.java"), contentStudent.replaceFirst("true", "true && true").getBytes(), false);
 
-            Process p = pb.start();
+            Main.main(new String[]{"--config-path=\"src/test/resources/tmp2/resources/config.smt\"", "commit", "-m", "bonjour" });
 
-            smartOutput = flattenString(IOUtils.toString(p.getInputStream(), Charset.defaultCharset()));
-
-            assertEquals("Changes has been committed successfully", smartOutput);
-
+            assertEquals("Changes has been committed successfully", flattenString(out.toString()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -143,19 +120,15 @@ class EndToEndTest extends SuperClone{
     @Test
     void testMultipleChange(){
         try {
-            ProcessBuilder pb = new ProcessBuilder("java", "-jar", "smartest-jar-with-dependencies.jar", "--config-path=\"../src/test/resources/tmp2/resources/config.smt\"", "test");
-            pb.directory(new File(Paths.get("target").toAbsolutePath().toString()));
-            Process p = pb.start();
+            Main.main(new String[]{"--config-path=\"src/test/resources/tmp2/resources/config.smt\"", "test"});
 
-            String smartOutput = flattenString(IOUtils.toString(p.getInputStream(), Charset.defaultCharset()));
-
-            assertEquals("" + 0 + " tests has been executed", smartOutput);
+            assertEquals("" + 0 + " tests has been executed", flattenString(out.toString()));
 
             FileUtils.writeByteArrayToFile(new File(tmp2Path.toAbsolutePath().toString(), "src/main/java/fr/unice/polytech/pnsinnov/Student.java"), contentStudent.replaceFirst("true", "false").getBytes(), false);
 
-            p = pb.start();
+            Main.main(new String[]{"--config-path=\"src/test/resources/tmp2/resources/config.smt\"", "test"});
 
-            smartOutput = flattenString(IOUtils.toString(p.getInputStream(), Charset.defaultCharset()));
+            String smartOutput = flattenString(out.toString());
 
             assertTrue(smartOutput.endsWith("" + 2 + " tests has been executed"));
             assertTrue(smartOutput.contains(schoolExpected + ": " + TestReport.Status.SUCCESSFUL));
@@ -168,19 +141,15 @@ class EndToEndTest extends SuperClone{
     @Test
     void testOneChange(){
         try {
-            ProcessBuilder pb = new ProcessBuilder("java", "-jar", "smartest-jar-with-dependencies.jar", "--config-path=\"../src/test/resources/tmp2/resources/config.smt\"", "test");
-            pb.directory(new File(Paths.get("target").toAbsolutePath().toString()));
-            Process p = pb.start();
+            Main.main(new String[]{"--config-path=\"src/test/resources/tmp2/resources/config.smt\"", "test"});
 
-            String smartOutput = flattenString(IOUtils.toString(p.getInputStream(), Charset.defaultCharset()));
-
-            assertEquals("" + 0 + " tests has been executed", smartOutput);
+            assertEquals("" + 0 + " tests has been executed", flattenString(out.toString()));
 
             FileUtils.writeByteArrayToFile(new File(tmp2Path.toAbsolutePath().toString(), "src/main/java/fr/unice/polytech/pnsinnov/School.java"), contentSchool.replaceFirst("new ArrayList<Student>\\(\\);", "new ArrayList<Student>();\n\t\tSystem.out.println(\"test\");").getBytes(), false);
 
-            p = pb.start();
+            Main.main(new String[]{"--config-path=\"src/test/resources/tmp2/resources/config.smt\"", "test"});
 
-            smartOutput = flattenString(IOUtils.toString(p.getInputStream(), Charset.defaultCharset()));
+            String smartOutput = flattenString(out.toString());
 
             assertTrue(smartOutput.endsWith("" + 1 + " tests has been executed"));
             assertTrue(smartOutput.contains(schoolExpected + ": " + TestReport.Status.SUCCESSFUL));
@@ -193,93 +162,18 @@ class EndToEndTest extends SuperClone{
     @Test
     void listAllTestOneChange(){
         try {
-            ProcessBuilder pb = new ProcessBuilder("java", "-jar", "smartest-jar-with-dependencies.jar", "--config-path=\"../src/test/resources/tmp2/resources/config.smt\"", "list-tests");
-            pb.directory(new File(Paths.get("target").toAbsolutePath().toString()));
-            Process p = pb.start();
+            Main.main(new String[]{"--config-path=\"src/test/resources/tmp2/resources/config.smt\"", "list-tests"});
 
-            String smartOutput = flattenString(IOUtils.toString(p.getInputStream(), Charset.defaultCharset()));
-
-            assertEquals("No change impacting tests were detected", smartOutput);
+            assertEquals("No change impacting tests were detected", flattenString(out.toString()));
 
             FileUtils.writeByteArrayToFile(new File(tmp2Path.toAbsolutePath().toString(), "src/main/java/fr/unice/polytech/pnsinnov/School.java"), contentSchool.replaceFirst("new ArrayList<Student>\\(\\);", "new ArrayList<Student>();\n\t\tSystem.out.println(\"test\");").getBytes(), false);
 
-            p = pb.start();
+            Main.main(new String[]{"--config-path=\"src/test/resources/tmp2/resources/config.smt\"", "list-tests"});
 
-            smartOutput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
+            String smartOutput = flattenString(out.toString());
 
             assertTrue(smartOutput.contains(this.schoolExpected));
             assertFalse(smartOutput.contains(this.studentExpected));
-        } catch (IOException e) {
-            System.out.println("File not found");
-        }
-    }
-
-    @Test
-    void listAllTestOverJar(){
-        try {
-            ProcessBuilder pb = new ProcessBuilder("java", "-jar", "target/smartest-jar-with-dependencies.jar", "--config-path=\"src/test/resources/tmp2/resources/config.smt\"", "list-tests");
-            Process p = pb.start();
-
-            String smartOutput = flattenString(IOUtils.toString(p.getInputStream(), Charset.defaultCharset()));
-
-            assertEquals("No change impacting tests were detected", smartOutput);
-
-            FileUtils.writeByteArrayToFile(new File(tmp2Path.toAbsolutePath().toString(), "src/main/java/fr/unice/polytech/pnsinnov/Student.java"), contentStudent.replaceFirst("true", "false").getBytes(), false);
-
-            p = pb.start();
-
-            smartOutput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
-
-            assertTrue(smartOutput.contains(this.schoolExpected));
-            assertTrue(smartOutput.contains(this.studentExpected));
-        } catch (IOException e) {
-            System.out.println("File not found");
-        }
-    }
-
-    @Test
-    void listAllTestRootJar(){
-        try {
-            ProcessBuilder pb = new ProcessBuilder("java", "-jar", "smartest-jar-with-dependencies.jar", "--config-path=\"../src/test/resources/tmp2/resources/config.smt\"", "list-tests");
-            pb.directory(new File(Paths.get("target").toAbsolutePath().toString()));
-            Process p = pb.start();
-
-            String smartOutput = flattenString(IOUtils.toString(p.getInputStream(), Charset.defaultCharset()));
-
-            assertEquals("No change impacting tests were detected", smartOutput);
-
-            FileUtils.writeByteArrayToFile(new File(tmp2Path.toAbsolutePath().toString(), "src/main/java/fr/unice/polytech/pnsinnov/Student.java"), contentStudent.replaceFirst("true", "false").getBytes(), false);
-
-            p = pb.start();
-
-            smartOutput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
-
-            assertTrue(smartOutput.contains(this.schoolExpected));
-            assertTrue(smartOutput.contains(this.studentExpected));
-        } catch (IOException e) {
-            System.out.println("File not found");
-        }
-    }
-
-    @Test
-    void listAllTestFromProject(){
-        try {
-            ProcessBuilder pb = new ProcessBuilder("java", "-jar", "../../../../target/smartest-jar-with-dependencies.jar", "--config-path=\"resources/config.smt\"", "list-tests");
-            pb.directory(new File(Paths.get("src/test/resources/tmp2").toAbsolutePath().toString()));
-            Process p = pb.start();
-
-            String smartOutput = flattenString(IOUtils.toString(p.getInputStream(), Charset.defaultCharset()));
-
-            assertEquals("No change impacting tests were detected", smartOutput);
-
-            FileUtils.writeByteArrayToFile(new File(tmp2Path.toAbsolutePath().toString(), "src/main/java/fr/unice/polytech/pnsinnov/Student.java"), contentStudent.replaceFirst("true", "false").getBytes(), false);
-
-            p = pb.start();
-
-            smartOutput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
-
-            assertTrue(smartOutput.contains(this.schoolExpected));
-            assertTrue(smartOutput.contains(this.studentExpected));
         } catch (IOException e) {
             System.out.println("File not found");
         }
@@ -290,17 +184,11 @@ class EndToEndTest extends SuperClone{
     }
 
     @AfterEach
-    void deleteTmp2(){
+    void deleteTmp2() {
         try {
             FileUtils.deleteDirectory(new File(this.tmp2Path.toAbsolutePath().toString()));
         } catch (IOException e) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e1) {
-                //Won't be deleted..
-            }
-
-            deleteTmp2();
+            e.printStackTrace();
         }
     }
 }
