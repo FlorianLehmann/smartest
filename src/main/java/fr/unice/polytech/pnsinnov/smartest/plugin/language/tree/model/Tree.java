@@ -6,11 +6,11 @@ import java.nio.file.Path;
 public class Tree implements Serializable {
 
     private Class cls;
-    private Path path;
+    private String path;
 
     public Tree(Class cls, Path path) {
         this.cls = cls;
-        this.path = path;
+        this.path = path.toAbsolutePath().toString();
     }
 
     public Class getCls() {

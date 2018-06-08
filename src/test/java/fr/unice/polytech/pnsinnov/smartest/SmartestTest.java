@@ -29,6 +29,9 @@ class SmartestTest extends SuperClone {
         FileUtils.copyDirectory(directory, workingDir.toFile());
         Configuration config = new JSONConfigReader().readConfig(workingDir.resolve("resources/config.smt"));
         smartest = new Smartest(config);
+        new File("smartest/trees.db").delete();
+        new File("smartest/classes.db").delete();
+        new File("smartest/tests.db").delete();
     }
 
     @AfterEach

@@ -56,6 +56,9 @@ class EndToEndTest extends SuperClone{
         out = new ByteArrayOutputStream();
 
         System.setOut(new PrintStream(out));
+        new File("smartest/trees.db").delete();
+        new File("smartest/classes.db").delete();
+        new File("smartest/tests.db").delete();
     }
 
     private ObjectId getCurrentGitHead(File gitFile){
