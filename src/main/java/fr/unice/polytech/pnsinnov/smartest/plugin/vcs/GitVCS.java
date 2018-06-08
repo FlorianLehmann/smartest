@@ -67,15 +67,17 @@ public class GitVCS implements VCS {
             HashSet<Diff> diffs = new HashSet<>();
 
             for (String path : git.status().call().getAdded()) {
-                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.ADDED, ""));
+                diffs.add(new GitDiff(projectPath.resolve(path).toAbsolutePath(), Diff.Status.ADDED, ""));
             }
 
             for (String path : git.status().call().getRemoved()) {
-                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.REMOVED, getContentFromGit(git, path)));
+                diffs.add(new GitDiff(projectPath.resolve(path).toAbsolutePath(), Diff.Status.REMOVED,
+                        getContentFromGit(git, path)));
             }
 
             for (String path : git.status().call().getModified()) {
-                diffs.add(new GitDiff(projectPath.resolve(path), Diff.Status.MODIFIED, getContentFromGit(git, path)));
+                diffs.add(new GitDiff(projectPath.resolve(path).toAbsolutePath(), Diff.Status.MODIFIED,
+                        getContentFromGit(git, path)));
             }
             return diffs;
         }
@@ -101,9 +103,8 @@ public class GitVCS implements VCS {
 
             RevWalk revWalk = new RevWalk(repository);
             RevCommit commit = revWalk.parseCommit(lastCommitId);
-
             TreeWalk treeWalk = TreeWalk.forPath(git.getRepository(), path, commit.getTree());
-
+            revWalk.dispose();
             ObjectId blobId = treeWalk.getObjectId(0);
             ObjectReader objectReader = git.getRepository().newObjectReader();
             ObjectLoader objectLoader = objectReader.open(blobId);

@@ -72,7 +72,7 @@ class GitVCSTest extends SuperClone {
             for (Diff diff : this.gitVCS.diff()) {
                 paths.add(diff.getPath());
             }
-            assertTrue(paths.contains(toCreate.toPath()));
+            assertTrue(paths.contains(toCreate.toPath().toAbsolutePath()));
 
             File file = new File("src/test/resources/unmodifiedTestFile.txt");
 
