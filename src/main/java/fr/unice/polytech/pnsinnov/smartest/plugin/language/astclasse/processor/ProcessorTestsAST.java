@@ -24,14 +24,19 @@ public class ProcessorTestsAST extends AbstractProcessor<CtClass> {
             if (database.getMapClassTests().containsKey(ctTypeReference.getQualifiedName())) {
                 database.getMapClassTests().get(ctTypeReference.getQualifiedName()).add(candidate.getQualifiedName());
             }
-            if (ctTypeReference.getActualTypeArguments().size()!=0) {
-                List<String> types = getGenerics(ctTypeReference);
-                for (String typeName : types) {
-                    if (database.getMapClassTests().containsKey(typeName))
-                        database.getMapClassTests().get(typeName).add(candidate.getQualifiedName());
+            try {
+                if (ctTypeReference.getActualTypeArguments().size()!=0) {
+                    List<String> types = getGenerics(ctTypeReference);
+                    for (String typeName : types) {
+                        if (database.getMapClassTests().containsKey(typeName))
+                            database.getMapClassTests().get(typeName).add(candidate.getQualifiedName());
 
+                    }
                 }
+            } catch (Exception e) {
+                //e.printStackTrace();
             }
+
 
 
         }
