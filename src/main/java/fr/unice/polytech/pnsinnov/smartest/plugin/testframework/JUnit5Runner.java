@@ -7,6 +7,7 @@ import fr.smartest.plugin.TestFramework;
 import fr.smartest.plugin.TestReport;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
@@ -21,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,7 +58,8 @@ public class JUnit5Runner implements TestFramework {
         URL[] urls = getModulesURL(modules);
         try (URLClassLoader urlClassLoader = new URLClassLoader(urls)) {
             for (Test test : sortedByPriority) {
-                Class<?> cls = urlClassLoader.loadClass(test.getIdentifier());
+                String[] identifiers = test.getIdentifier().split("#");
+                Class<?> cls = urlClassLoader.loadClass(identifiers[0]);
                 testReports.add(run(test, cls));
             }
         }
@@ -69,9 +72,17 @@ public class JUnit5Runner implements TestFramework {
 
     private TestReport run(Test test, Class<?> cls) {
         logger.debug("running test=" + test + "with loaded class " + cls);
+        String[] identifiers = test.getIdentifier().split("#");
         Launcher launcher = LauncherFactory.create();
+        List<DiscoverySelector> selectors = new ArrayList<>();
+        if (identifiers.length == 1) {
+            selectors.add(DiscoverySelectors.selectClass(cls));
+        }
+        else if (identifiers.length == 2) {
+            selectors.add(DiscoverySelectors.selectMethod(cls, identifiers[1]));
+        }
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(DiscoverySelectors.selectClass(cls)).build();
+                .selectors(selectors.toArray(new DiscoverySelector[0])).build();
         SummaryGeneratingListener listener = new SummaryGeneratingListener();
         launcher.registerTestExecutionListeners(listener);
         launcher.execute(request);

@@ -7,6 +7,7 @@ import gumtree.spoon.diff.operations.Operation;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import spoon.Launcher;
+import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
@@ -35,6 +36,9 @@ public class AST {
 
     private CtModel buildModel(Path... paths) {
         Launcher launcher = new Launcher();
+        Environment environment = launcher.getEnvironment();
+        environment.setAutoImports(true);
+        environment.setNoClasspath(true);
         for (Path path : paths) {
             launcher.addInputResource(path.toString());
         }

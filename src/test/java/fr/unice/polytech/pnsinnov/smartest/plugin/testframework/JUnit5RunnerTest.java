@@ -35,4 +35,13 @@ class JUnit5RunnerTest extends SuperClone {
         assertFalse(run.isEmpty());
         assertTrue(run.stream().allMatch(testReport -> testReport.getResult() == TestReport.Status.SUCCESSFUL));
     }
+
+    @Test
+    void findComplexTestAndRunIt() throws TestFrameworkException {
+        Set<fr.smartest.plugin.Test> junitTests = new HashSet<>();
+        junitTests.add(new JunitTest(Priority.HIGH, "fr.unice.polytech.pnsinnov.SchoolTest#shouldEnrollAStudent"));
+        Set<TestReport> run = jUnit5Runner.run(junitTests, mavenProduction.getModules());
+        assertFalse(run.isEmpty());
+        assertTrue(run.stream().allMatch(testReport -> testReport.getResult() == TestReport.Status.SUCCESSFUL));
+    }
 }
