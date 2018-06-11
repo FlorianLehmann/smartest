@@ -19,7 +19,8 @@
     </properties>
 
     <modules>
-        <module>sub1</module>
+        <module>sub2</module>
+        <module>sub3</module>
     </modules>
 
     <dependencies>

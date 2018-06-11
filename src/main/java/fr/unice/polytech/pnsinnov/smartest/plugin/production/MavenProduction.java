@@ -4,9 +4,14 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.production;
 import fr.smartest.exceptions.ProductionToolException;
 import fr.smartest.plugin.Module;
 import fr.smartest.plugin.ProductionTool;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.shared.invoker.*;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,26 +28,28 @@ public class MavenProduction implements ProductionTool {
 
     @Override
     public List<Module> getModules() {
-        return retrieveAllModules(new File(baseDir.toAbsolutePath().toString()));
+        return retrieveModulesWithPom(new File(baseDir.toAbsolutePath().toString()));
     }
 
-    private List<Module> retrieveAllModules(File currentDir){
+    private List<Module> retrieveModulesWithPom(File currentDir){
         List<Module> res = new ArrayList<>();
 
-        File pomfile = new File(currentDir.getAbsolutePath() + PathPlugin.POM_FILE.getName());
+        MavenXpp3Reader reader = new MavenXpp3Reader();
 
-        File srcFile = new File(currentDir.getAbsolutePath() + PathPlugin.SRC_DIRECTORY.getName());
+        try {
+            FileReader fileReader = new FileReader(new File(currentDir, PathPlugin.POM_FILE.getName()));
+            Model model = reader.read(fileReader);
+            fileReader.close();
 
-        if(pomfile.exists() && srcFile.exists()){
-            res.add(new MavenModule(currentDir.toPath()));
+            res.add(new MavenModule(currentDir.toPath().toAbsolutePath()));
+
+            for (String module :
+                    model.getModules()) {
+                res.addAll(retrieveModulesWithPom(new File(currentDir, module)));
+            }
         }
-
-        File[] directories = currentDir.listFiles(File::isDirectory);
-
-        assert directories != null;
-
-        for (File directory : directories) {
-            res.addAll(retrieveAllModules(directory));
+        catch (IOException | XmlPullParserException e) {
+            res = new ArrayList<>();
         }
 
         return res;
