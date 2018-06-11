@@ -27,17 +27,17 @@ public class MavenProductionTest extends SuperClone {
     }
 
     @Test
-    void getModules() {
+    void getModulesWithSub(){
+        MavenProduction production = new MavenProduction();
+        production.setUp(Paths.get("src/test/resources/pom").toAbsolutePath());
 
-        assertEquals(1, production.getModules().size());
+        assertEquals(4, production.getModules().size());
 
         if(production.getModules().size() >= 1){
             Module module = production.getModules().get(0);
 
-            assertEquals(Paths.get("src/test/resources/tmp/src/main/java").toAbsolutePath(), module.getSrcPath());
-            assertEquals(Paths.get("src/test/resources/tmp/src/test/java").toAbsolutePath(), module.getTestPath());
+            assertEquals(Paths.get("src/test/resources/pom/here/i/am").toAbsolutePath(), module.getSrcPath());
         }
-
     }
 
     @Test

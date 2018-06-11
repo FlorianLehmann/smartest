@@ -18,10 +18,6 @@
         <tests.output>launch/test/here</tests.output>
     </properties>
 
-    <modules>
-        <module>sub1</module>
-    </modules>
-
     <dependencies>
         <dependency>
             <groupId>info.picocli</groupId>
