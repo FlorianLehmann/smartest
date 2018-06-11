@@ -60,24 +60,22 @@ public class GitVCS implements VCS {
 
     @Override
     public Set<Diff> diff() throws VCSException {
-        Git git = null;
-        try {
-            git = Git.open(new File(gitPath.toAbsolutePath().toString()));
+        try (Git git = Git.open(new File(gitPath.toAbsolutePath().toString()))) {
+            Repository repository = git.getRepository();
+            RevCommit head = getHead(repository);
 
             HashSet<Diff> diffs = new HashSet<>();
 
             for (String path : git.status().call().getAdded()) {
-                diffs.add(new GitDiff(projectPath.resolve(path).toAbsolutePath(), Diff.Status.ADDED, ""));
+                diffs.add(createDiff(repository, head, path, Diff.Status.ADDED));
             }
 
             for (String path : git.status().call().getRemoved()) {
-                diffs.add(new GitDiff(projectPath.resolve(path).toAbsolutePath(), Diff.Status.REMOVED,
-                        getContentFromGit(git, path)));
+                diffs.add(createDiff(repository, head, path, Diff.Status.REMOVED));
             }
 
             for (String path : git.status().call().getModified()) {
-                diffs.add(new GitDiff(projectPath.resolve(path).toAbsolutePath(), Diff.Status.MODIFIED,
-                        getContentFromGit(git, path)));
+                diffs.add(createDiff(repository, head, path, Diff.Status.MODIFIED));
             }
             return diffs;
         }
@@ -87,31 +85,33 @@ public class GitVCS implements VCS {
         catch (GitAPIException e) {
             throw new GitException(e);
         }
-        finally {
-            if (git != null) {
-                git.close();
-            }
+    }
+
+    private Diff createDiff(Repository repository, RevCommit head, String path, Diff.Status status) throws IOException {
+        return new GitDiff(projectPath.resolve(path).toAbsolutePath(),
+                status, getOldContent(repository, head, path));
+    }
+
+    private RevCommit getHead(Repository repository) throws IOException {
+        try (RevWalk revWalk = new RevWalk(repository)) {
+            ObjectId lastCommitId = repository.resolve(Constants.HEAD);
+            RevCommit head = revWalk.parseCommit(lastCommitId);
+            revWalk.dispose();
+            return head;
         }
     }
 
-    private String getContentFromGit(Git git, String path) throws GitException {
-        Repository repository = git.getRepository();
-
-        ObjectId lastCommitId = null;
-        try {
-            lastCommitId = repository.resolve(Constants.HEAD);
-
-            RevWalk revWalk = new RevWalk(repository);
-            RevCommit commit = revWalk.parseCommit(lastCommitId);
-            TreeWalk treeWalk = TreeWalk.forPath(git.getRepository(), path, commit.getTree());
-            revWalk.dispose();
+    private String getOldContent(Repository repository, RevCommit commit, String path) throws IOException {
+        try (TreeWalk treeWalk = TreeWalk.forPath(repository, path, commit.getTree())) {
             ObjectId blobId = treeWalk.getObjectId(0);
-            ObjectReader objectReader = git.getRepository().newObjectReader();
-            ObjectLoader objectLoader = objectReader.open(blobId);
-            byte[] bytes = objectLoader.getBytes();
-            return new String(bytes, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new GitException(e);
+            try (ObjectReader objectReader = repository.newObjectReader()) {
+                ObjectLoader objectLoader = objectReader.open(blobId);
+                byte[] bytes = objectLoader.getBytes();
+                return new String(bytes, StandardCharsets.UTF_8);
+            }
+        }
+        catch (NullPointerException e) {
+            return "";
         }
     }
 

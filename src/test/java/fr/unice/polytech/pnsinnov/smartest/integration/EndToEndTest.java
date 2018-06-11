@@ -36,10 +36,12 @@ class EndToEndTest extends SuperClone{
     private ByteArrayOutputStream out;
 
     @BeforeAll
-    static void setupEndToEnd(){
+    void setupEndToEnd() {
         try {
-            contentStudent = new String(Files.readAllBytes(new File(SuperClone.directory.getAbsolutePath(), "src/main/java/fr/unice/polytech/pnsinnov/Student.java").toPath()));
-            contentSchool = new String(Files.readAllBytes(new File(SuperClone.directory.getAbsolutePath(), "src/main/java/fr/unice/polytech/pnsinnov/School.java").toPath()));
+            contentStudent = new String(Files.readAllBytes(new File(directory.getAbsolutePath(),
+                    "src/main/java/fr/unice/polytech/pnsinnov/Student.java").toPath()));
+            contentSchool = new String(Files.readAllBytes(new File(directory.getAbsolutePath(),
+                    "src/main/java/fr/unice/polytech/pnsinnov/School.java").toPath()));
         } catch (IOException e) {
             e.printStackTrace();
         }

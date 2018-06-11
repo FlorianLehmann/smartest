@@ -34,7 +34,11 @@ public class TestImplementation implements fr.smartest.plugin.Test {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(priority, Identifier);
+    }
+
+    @Override
+    public String toString() {
+        return "TestImplementation{priority=" + priority + ", Identifier='" + Identifier + "\'}";
     }
 }

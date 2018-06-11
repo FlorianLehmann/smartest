@@ -77,7 +77,7 @@ class GitVCSTest extends SuperClone {
             File file = new File("src/test/resources/unmodifiedTestFile.txt");
 
             if(file.exists()){
-                assertFalse(paths.contains(file.getPath()));
+                assertFalse(paths.contains(file.toPath()));
             }
         } catch (VCSException e) {
             e.printStackTrace();
@@ -88,13 +88,13 @@ class GitVCSTest extends SuperClone {
     void commit() {
         Git git = null;
 
-        this.gitVCS.setUp(Paths.get(SuperClone.directory.getAbsolutePath(), ".git"), Paths.get(SuperClone.directory
+        this.gitVCS.setUp(Paths.get(directory.getAbsolutePath(), ".git"), Paths.get(directory
                 .getAbsolutePath()));
 
         try {
-            git = Git.open(new File(SuperClone.directory.getAbsolutePath(), ".git"));
+            git = Git.open(new File(directory.getAbsolutePath(), ".git"));
 
-            File file = new File(SuperClone.directory.getAbsolutePath(), "empty.txt");
+            File file = new File(directory.getAbsolutePath(), "empty.txt");
 
             if(file.createNewFile()){
                 git.add().addFilepattern(file.getName()).call();

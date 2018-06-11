@@ -30,7 +30,7 @@ class TreeFactoryTest extends SuperClone {
         classNames.add("fr.unice.polytech.pnsinnov.Main");
         classNames.add("fr.unice.polytech.pnsinnov.School");
         classNames.add("fr.unice.polytech.pnsinnov.Student");
-        files = new DirectoryExplorer().explore(Paths.get(SuperClone.directory.getAbsolutePath(), "/src/main/java"));
+        files = new DirectoryExplorer().explore(Paths.get(directory.getAbsolutePath(), "/src/main/java"));
     }
 
     @Test

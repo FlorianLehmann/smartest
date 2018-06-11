@@ -14,22 +14,23 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MethodAST implements Language {
-    private static final Logger logger = LogManager.getLogger(MethodAST.class);
-    private static final String IDENTIFIER = "MethodAST";
+public class JavaMethod implements Language {
+    private static final Logger logger = LogManager.getLogger(JavaMethod.class);
+    private static final String IDENTIFIER = "Java method";
     private List<AST> modulesAST;
 
     @Override
     public void setUp(List<Module> modules) {
-        logger.debug("Set up MethodAST with " + modules.size() + " modules");
+        logger.debug("Set up JavaMethod with " + modules.size() + " modules");
         modulesAST = modules.stream().map(AST::new).collect(Collectors.toList());
     }
 
     @Override
     public Set<Test> getTestsRelatedToChanges(String scope, Set<Diff> diffs) {
         Set<Test> tests = new HashSet<>();
+        Scope scp = Scope.value(scope);
         for (AST ast : modulesAST) {
-            Set<CtMethod> test = ast.getTestsRelatedToChanges(diffs);
+            Set<CtMethod> test = ast.getTestsRelatedToChanges(scp, diffs);
             tests.addAll(test.stream()
                     .map(this::methodToIdentifier)
                     .map(TestImplementation::new)

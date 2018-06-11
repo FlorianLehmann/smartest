@@ -42,9 +42,9 @@ public class AST {
     }
 
 
-    public Set<CtMethod> getTestsRelatedToChanges(Set<Diff> diffs) {
+    public Set<CtMethod> getTestsRelatedToChanges(Scope scope, Set<Diff> diffs) {
         Set<CtMethod> tests = new HashSet<>();
-        SourceTestMapping mapping = new SourceTestMapping.Builder(module, model).build();
+        SourceTestMapping mapping = scope.build(module, model);
         List<CtExecutable> executables = model.getRootPackage().getElements(new TypeFilter<>(CtExecutable.class));
         for (Diff diff : diffs) {
             if (isInModule(diff)) {

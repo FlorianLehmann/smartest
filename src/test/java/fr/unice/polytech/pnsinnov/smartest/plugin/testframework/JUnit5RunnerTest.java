@@ -23,7 +23,7 @@ class JUnit5RunnerTest extends SuperClone {
     void setUp() throws ProductionToolException {
         jUnit5Runner = new JUnit5Runner();
         mavenProduction = new MavenProduction();
-        mavenProduction.setUp(SuperClone.directory.toPath());
+        mavenProduction.setUp(directory.toPath());
         mavenProduction.compile();
     }
 

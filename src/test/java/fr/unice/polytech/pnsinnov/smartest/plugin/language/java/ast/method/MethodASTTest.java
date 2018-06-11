@@ -26,18 +26,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MethodASTTest extends SuperClone {
     private MavenProduction mavenProduction;
-    private MethodAST language;
-    private Path workingDir = SuperClone.directory.toPath().getParent().resolve("copy2").toAbsolutePath();
+    private JavaMethod language;
+    private Path workingDir = directory.toPath().getParent().resolve("copy2").toAbsolutePath();
     private Path src = workingDir.resolve(Paths.get("src", "main", "java", "fr", "unice", "polytech", "pnsinnov"))
             .toAbsolutePath();
 
+    public MethodASTTest() {
+        setCommit("2b6ea99cdc83e21a6190bb7f0f036932fc6573e1");
+    }
+
     @BeforeEach
     void setUp() throws IOException {
-        FileUtils.copyDirectory(SuperClone.directory, workingDir.toFile());
+        FileUtils.copyDirectory(directory, workingDir.toFile());
         Configuration config = new JSONConfigReader().readConfig(workingDir.resolve("resources/config.smt"));
         mavenProduction = new MavenProduction();
         mavenProduction.setUp(workingDir);
-        language = new MethodAST();
+        language = new JavaMethod();
     }
 
     @AfterEach
@@ -46,13 +50,14 @@ class MethodASTTest extends SuperClone {
     }
 
     @Test
-    void changeSchool() throws IOException, VCSException, GitAPIException {
+    void addMethodToSchool() throws IOException, VCSException, GitAPIException {
         Path school = src.resolve("School.java");
         PrintWriter writer = new PrintWriter(school.toFile(), "UTF-8");
-        writer.println("package fr.unice.polytech.pnsinnov;import java.util.LinkedList;import java.util.List;public " +
-                "class School {private List<Student> students;public School() {this.students = new " +
-                "LinkedList<Student>();}public void enrollStudent(Student student) {students.add(student);}" +
-                "public void fireStudent(Student student) {students.remove(student);}}");
+        writer.println("package fr.unice.polytech.pnsinnov;import java.util.ArrayList;import java.util.List;public " +
+                "class School {private List<Student> students;private Teacher tot;private String e;public School() " +
+                "{this.students = new ArrayList<Student>();}public void enrollStudent(Student student) {students.add" +
+                "(student);}public void fireStudent(Student student) {students.remove(student);}public boolean " +
+                "allSmart() {for (Student student : students) {if (!student.isSmart()) {return false;}}return true;}}");
         writer.close();
         Git git = Git.open(workingDir.resolve(".git").toFile());
         git.add().addFilepattern(school.toString()).call();
@@ -60,10 +65,8 @@ class MethodASTTest extends SuperClone {
         GitVCS gitVCS = new GitVCS();
         gitVCS.setUp(workingDir.resolve(".git").toAbsolutePath(), workingDir);
         language.setUp(mavenProduction.getModules());
-        Set<fr.smartest.plugin.Test> tests = language.getTestsRelatedToChanges("best", gitVCS.diff());
-        Set<fr.smartest.plugin.Test> expected = new HashSet<>();
-        expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.SchoolTest#shouldEnrollAStudent"));
-        assertEquals(expected, tests);
+        Set<fr.smartest.plugin.Test> tests = language.getTestsRelatedToChanges("method", gitVCS.diff());
+        assertEquals(new HashSet<>(), tests);
     }
 
     @Test
@@ -80,9 +83,115 @@ class MethodASTTest extends SuperClone {
         GitVCS gitVCS = new GitVCS();
         gitVCS.setUp(workingDir.resolve(".git"), workingDir);
         language.setUp(mavenProduction.getModules());
+        Set<fr.smartest.plugin.Test> tests = language.getTestsRelatedToChanges("method", gitVCS.diff());
+        Set<fr.smartest.plugin.Test> expected = new HashSet<>();
+        expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.StudentTest#shouldCreateAStudent"));
+        assertEquals(expected, tests);
+    }
+
+
+    @Test
+    void changeStudentWithDependencies() throws IOException, VCSException, GitAPIException {
+        boolean b = new Random().nextBoolean();
+        Path studentPath = src.resolve("Student.java");
+        PrintWriter writer = new PrintWriter(studentPath.toFile(), "UTF-8");
+        writer.println("package fr.unice.polytech.pnsinnov;public class Student {private String name;public Student" +
+                "(String name) {this.name = name;}public boolean isSmart() {return false;}}");
+        writer.close();
+        Git git = Git.open(workingDir.resolve(".git").toFile());
+        git.add().addFilepattern(studentPath.toString()).call();
+        git.close();
+        GitVCS gitVCS = new GitVCS();
+        gitVCS.setUp(workingDir.resolve(".git"), workingDir);
+        language.setUp(mavenProduction.getModules());
         Set<fr.smartest.plugin.Test> tests = language.getTestsRelatedToChanges("best", gitVCS.diff());
         Set<fr.smartest.plugin.Test> expected = new HashSet<>();
         expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.StudentTest#shouldCreateAStudent"));
+        expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.SchoolTest#allSmart"));
+        assertEquals(expected, tests);
+    }
+
+    @Test
+    void changeStudentConstructorWithDependencies() throws IOException, VCSException, GitAPIException {
+        boolean b = new Random().nextBoolean();
+        Path studentPath = src.resolve("Student.java");
+        PrintWriter writer = new PrintWriter(studentPath.toFile(), "UTF-8");
+        writer.println("package fr.unice.polytech.pnsinnov;public class Student {private String name;public Student" +
+                "(String name) {this.name = name + '!';}public boolean isSmart() {return true;}}");
+        writer.close();
+        Git git = Git.open(workingDir.resolve(".git").toFile());
+        git.add().addFilepattern(studentPath.toString()).call();
+        git.close();
+        GitVCS gitVCS = new GitVCS();
+        gitVCS.setUp(workingDir.resolve(".git"), workingDir);
+        language.setUp(mavenProduction.getModules());
+        Set<fr.smartest.plugin.Test> tests = language.getTestsRelatedToChanges("best", gitVCS.diff());
+        Set<fr.smartest.plugin.Test> expected = new HashSet<>();
+        expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.StudentTest#shouldCreateAStudent"));
+        expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.SchoolTest#allSmart"));
+        expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.SchoolTest#shouldEnrollAStudent"));
+        assertEquals(expected, tests);
+    }
+
+
+    @Test
+    void changeSchoolConstructor() throws IOException, VCSException, GitAPIException {
+        Path school = src.resolve("School.java");
+        PrintWriter writer = new PrintWriter(school.toFile(), "UTF-8");
+        writer.println("package fr.unice.polytech.pnsinnov;import java.util.LinkedList;import java.util.List;public " +
+                "class School {private List<Student> students;private Teacher tot;private String e;public School() " +
+                "{this.students = new LinkedList<Student>();}public void enrollStudent(Student student) {students.add" +
+                "(student);}public boolean allSmart() {for (Student student : students) {if (!student.isSmart()) " +
+                "{return false;}}return true;}}");
+        writer.close();
+        Git git = Git.open(workingDir.resolve(".git").toFile());
+        git.add().addFilepattern(school.toString()).call();
+        git.close();
+        GitVCS gitVCS = new GitVCS();
+        gitVCS.setUp(workingDir.resolve(".git").toAbsolutePath(), workingDir);
+        language.setUp(mavenProduction.getModules());
+        Set<fr.smartest.plugin.Test> tests = language.getTestsRelatedToChanges("method", gitVCS.diff());
+        Set<fr.smartest.plugin.Test> expected = new HashSet<>();
+        expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.SchoolTest#shouldEnrollAStudent"));
+        expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.SchoolTest#allSmart"));
+        assertEquals(expected, tests);
+    }
+
+    @Test
+    void changeTeacher() throws IOException, VCSException, GitAPIException {
+        Path teacher = src.resolve("Teacher.java");
+        PrintWriter writer = new PrintWriter(teacher.toFile(), "UTF-8");
+        writer.println("package fr.unice.polytech.pnsinnov;public class Teacher {Course a;public int factorial(int i)" +
+                " {if (i < 0) {return 0;}if (i == 0) {return 0;}return i * factorial(i - 1);}}");
+        writer.close();
+        Git git = Git.open(workingDir.resolve(".git").toFile());
+        git.add().addFilepattern(teacher.toString()).call();
+        git.close();
+        GitVCS gitVCS = new GitVCS();
+        gitVCS.setUp(workingDir.resolve(".git").toAbsolutePath(), workingDir);
+        language.setUp(mavenProduction.getModules());
+        Set<fr.smartest.plugin.Test> tests = language.getTestsRelatedToChanges("method", gitVCS.diff());
+        Set<fr.smartest.plugin.Test> expected = new HashSet<>();
+        expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.TeacherTest#testFactorial"));
+        assertEquals(expected, tests);
+    }
+
+    @Test
+    void changeTeacherWithDependencies() throws IOException, VCSException, GitAPIException {
+        Path teacher = src.resolve("Teacher.java");
+        PrintWriter writer = new PrintWriter(teacher.toFile(), "UTF-8");
+        writer.println("package fr.unice.polytech.pnsinnov;public class Teacher {Course a;public int factorial(int i)" +
+                " {if (i < 0) {return 0;}if (i == 0) {return 0;}return i * factorial(i - 1);}}");
+        writer.close();
+        Git git = Git.open(workingDir.resolve(".git").toFile());
+        git.add().addFilepattern(teacher.toString()).call();
+        git.close();
+        GitVCS gitVCS = new GitVCS();
+        gitVCS.setUp(workingDir.resolve(".git").toAbsolutePath(), workingDir);
+        language.setUp(mavenProduction.getModules());
+        Set<fr.smartest.plugin.Test> tests = language.getTestsRelatedToChanges("best", gitVCS.diff());
+        Set<fr.smartest.plugin.Test> expected = new HashSet<>();
+        expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.TeacherTest#testFactorial"));
         assertEquals(expected, tests);
     }
 }

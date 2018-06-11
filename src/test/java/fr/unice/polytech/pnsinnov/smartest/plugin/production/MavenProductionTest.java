@@ -23,7 +23,7 @@ public class MavenProductionTest extends SuperClone {
     @BeforeEach
     public void setup(){
         production = new MavenProduction();
-        production.setUp(SuperClone.directory.toPath());
+        production.setUp(directory.toPath());
     }
 
     @Test
@@ -44,8 +44,8 @@ public class MavenProductionTest extends SuperClone {
     void compile() throws ProductionToolException {
         production.compile();
 
-        File srcFolder = new File(SuperClone.directory.getAbsolutePath(), "src/main/java/fr/unice/polytech/pnsinnov");
-        File srcOutPut= new File(SuperClone.directory.getAbsolutePath(),"target/classes/fr/unice/polytech/pnsinnov");
+        File srcFolder = new File(directory.getAbsolutePath(), "src/main/java/fr/unice/polytech/pnsinnov");
+        File srcOutPut = new File(directory.getAbsolutePath(), "target/classes/fr/unice/polytech/pnsinnov");
 
         assertTrue(srcOutPut.exists());
 
