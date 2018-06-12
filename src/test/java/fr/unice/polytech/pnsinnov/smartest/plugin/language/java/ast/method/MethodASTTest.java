@@ -1,6 +1,7 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.java.ast.method;
 
 import fr.smartest.exceptions.VCSException;
+import fr.smartest.plugin.Diff;
 import fr.unice.polytech.pnsinnov.smartest.SuperClone;
 import fr.unice.polytech.pnsinnov.smartest.configuration.Configuration;
 import fr.unice.polytech.pnsinnov.smartest.configuration.JSONConfigReader;
@@ -10,9 +11,11 @@ import fr.unice.polytech.pnsinnov.smartest.plugin.vcs.GitVCS;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -32,7 +35,7 @@ class MethodASTTest extends SuperClone {
             .toAbsolutePath();
 
     public MethodASTTest() {
-        setCommit("2b6ea99cdc83e21a6190bb7f0f036932fc6573e1");
+        setCommit("49027274b793549855864cc9db2aca85f4cfaeb4");
     }
 
     @BeforeEach
@@ -48,6 +51,55 @@ class MethodASTTest extends SuperClone {
     void tearDown() throws IOException {
         FileUtils.deleteDirectory(workingDir.toFile());
     }
+
+    @Ignore
+    @Test
+    void addFooToSource() throws VCSException {
+        GitVCS gitVCS = new GitVCS();
+        gitVCS.setUp(workingDir.resolve(".git").toAbsolutePath(), workingDir);
+        language.setUp(mavenProduction.getModules());
+        Diff diff = Mockito.mock(Diff.class);
+        Mockito.when(diff.getPath()).thenReturn(workingDir.resolve("src/main/java/fr/unice/polytech/pnsinnov/Foo" +
+                ".java").toAbsolutePath());
+        Mockito.when(diff.getNewContent()).thenReturn("package fr.unice.polytech.pnsinnov; public class Foo {}");
+        Mockito.when(diff.getOldContent()).thenReturn("");
+        Set<Diff> diffList = new HashSet<>();
+        diffList.add(diff);
+        Set<fr.smartest.plugin.Test> tests = language.getTestsRelatedToChanges("method", diffList);
+    }
+
+    @Ignore
+    @Test
+    void addFooToTest() throws VCSException {
+        GitVCS gitVCS = new GitVCS();
+        gitVCS.setUp(workingDir.resolve(".git").toAbsolutePath(), workingDir);
+        language.setUp(mavenProduction.getModules());
+        Diff diff = Mockito.mock(Diff.class);
+        Mockito.when(diff.getPath()).thenReturn(workingDir.resolve("src/main/java/fr/unice/polytech/pnsinnov/Foo" +
+                ".java").toAbsolutePath());
+        Mockito.when(diff.getNewContent()).thenReturn("package fr.unice.polytech.pnsinnov; public class FooTest {}");
+        Mockito.when(diff.getOldContent()).thenReturn("");
+        Set<Diff> diffList = new HashSet<>();
+        diffList.add(diff);
+        Set<fr.smartest.plugin.Test> tests = language.getTestsRelatedToChanges("method", diffList);
+    }
+
+    @Ignore
+    @Test
+    void removeFooFromSource() throws VCSException {
+        GitVCS gitVCS = new GitVCS();
+        gitVCS.setUp(workingDir.resolve(".git").toAbsolutePath(), workingDir);
+        language.setUp(mavenProduction.getModules());
+        Diff diff = Mockito.mock(Diff.class);
+        Mockito.when(diff.getPath()).thenReturn(workingDir.resolve("src/main/java/fr/unice/polytech/pnsinnov/Foo" +
+                ".java").toAbsolutePath());
+        Mockito.when(diff.getOldContent()).thenReturn("package fr.unice.polytech.pnsinnov; public class Foo {}");
+        Mockito.when(diff.getNewContent()).thenReturn("");
+        Set<Diff> diffList = new HashSet<>();
+        diffList.add(diff);
+        Set<fr.smartest.plugin.Test> tests = language.getTestsRelatedToChanges("method", diffList);
+    }
+
 
     @Test
     void addMethodToSchool() throws IOException, VCSException, GitAPIException {
@@ -92,7 +144,6 @@ class MethodASTTest extends SuperClone {
 
     @Test
     void changeStudentWithDependencies() throws IOException, VCSException, GitAPIException {
-        boolean b = new Random().nextBoolean();
         Path studentPath = src.resolve("Student.java");
         PrintWriter writer = new PrintWriter(studentPath.toFile(), "UTF-8");
         writer.println("package fr.unice.polytech.pnsinnov;public class Student {private String name;public Student" +
@@ -154,6 +205,7 @@ class MethodASTTest extends SuperClone {
         Set<fr.smartest.plugin.Test> expected = new HashSet<>();
         expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.SchoolTest#shouldEnrollAStudent"));
         expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.SchoolTest#allSmart"));
+        expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.SchoolTest#allCoursesAreUseful"));
         assertEquals(expected, tests);
     }
 

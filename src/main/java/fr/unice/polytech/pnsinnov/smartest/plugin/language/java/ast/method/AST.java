@@ -49,7 +49,8 @@ public class AST {
     public Set<CtMethod> getTestsRelatedToChanges(Scope scope, Set<Diff> diffs) {
         Set<CtMethod> tests = new HashSet<>();
         SourceTestMapping mapping = scope.build(module, model);
-        List<CtExecutable> executables = model.getRootPackage().getElements(new TypeFilter<>(CtExecutable.class));
+        List<CtExecutableReference> executables = model.getRootPackage().getElements(
+                new TypeFilter<>(CtExecutableReference.class));
         for (Diff diff : diffs) {
             if (isInModule(diff)) {
                 tests.addAll(findTests(mapping, executables, diff));
@@ -58,15 +59,15 @@ public class AST {
         return tests;
     }
 
-    private Set<CtMethod> findTests(SourceTestMapping mapping, List<CtExecutable> executables, Diff diff) {
+    private Set<CtMethod> findTests(SourceTestMapping mapping, List<CtExecutableReference> executables, Diff diff) {
         Set<CtMethod> tests = new HashSet<>();
         List<Operation> operations = new AstComparator()
                 .compare(diff.getNewContent(), diff.getOldContent())
                 .getAllOperations();
         for (Operation operation : operations) {
             CtExecutable parent = operation.getSrcNode().getParent(CtExecutable.class);
-            for (CtExecutable executable : executables) {
-                if (equalsExecutable(executable, parent)) {
+            for (CtExecutableReference executable : executables) {
+                if (equalsExecutable(executable.getDeclaration(), parent)) {
                     tests.addAll(mapping.findTestFor(executable));
                 }
             }
