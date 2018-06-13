@@ -2,6 +2,7 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.language.java.ast.method;
 
 import fr.smartest.plugin.Module;
 import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -24,54 +25,48 @@ public class MethodAndDependenciesMappingBuilder implements MappingBuilder {
 
     private DependencyMap buildDependencyMap(CtModel model) {
         DependencyMap dependencies = new DependencyMap();
-        List<CtExecutableReference> executableReferences = model.getRootPackage().filterChildren(
-                new TypeFilter<>(CtExecutableReference.class)).list();
-        for (CtExecutableReference executableReference : executableReferences) {
-            addDependencies(dependencies, executableReference);
+        List<CtExecutable> executables = model.getRootPackage()
+                .filterChildren(new TypeFilter<>(CtExecutable.class)).list();
+        for (CtExecutable executable : executables) {
+            addDependencies(dependencies, executable);
         }
         return dependencies.inverse();
     }
 
-    private void addDependencies(DependencyMap dependencies, CtExecutableReference executableReference) {
-        if (!dependencies.containsKey(executableReference)) {
-            List<CtExecutableReference> children = getChildren(executableReference);
-            dependencies.put(executableReference, new HashSet<>(children));
-            for (CtExecutableReference child : children) {
+    private void addDependencies(DependencyMap dependencies, CtExecutable executable) {
+        if (!dependencies.containsKey(executable)) {
+            List<CtExecutable> children = getChildren(executable);
+            dependencies.put(executable, new HashSet<>(children));
+            for (CtExecutable child : children) {
                 addDependencies(dependencies, child);
-                dependencies.get(executableReference).addAll(dependencies.get(child));
+                dependencies.get(executable).addAll(dependencies.get(child));
             }
+            addPolymorphism(dependencies, executable);
         }
     }
 
-    private List<CtExecutableReference> getChildren(CtExecutableReference ctExecutableReference) {
-        if (ctExecutableReference.getDeclaration() != null) {
-            return ctExecutableReference.getDeclaration().filterChildren(
-                    new TypeFilter<>(CtExecutableReference.class)).list();
+    private void addPolymorphism(DependencyMap dependencies, CtExecutable executable) {
+        CtExecutableReference overridingExecutable = executable.getReference().getOverridingExecutable();
+        if (overridingExecutable != null) {
+            CtExecutable declaration = overridingExecutable.getDeclaration();
+            addDependencies(dependencies, declaration);
+            addPolymorphism(dependencies, declaration);
+            dependencies.get(declaration).add(executable);
+            dependencies.get(declaration).addAll(dependencies.get(executable));
         }
-        return new ArrayList<>();
+    }
+
+    private List<CtExecutable> getChildren(CtExecutable ctExecutable) {
+        return ctExecutable.filterChildren(new TypeFilter<>(CtExecutableReference.class))
+                .<CtExecutableReference, CtExecutable>map(CtExecutableReference::getDeclaration).list();
     }
 
     private void addTestToMapping(Mapping mapping, DependencyMap dependencies, CtMethod test) {
-        List<CtExecutableReference> exe = test.filterChildren(new TypeFilter<>(CtExecutableReference.class)).list();
-        for (CtExecutableReference ctExecutableReference : exe) {
-            linkExecutableToTest(mapping, dependencies, ctExecutableReference, test);
-        }
-    }
-
-    private void linkExecutableToTest(Mapping mapping, DependencyMap dependencies,
-                                      CtExecutableReference ctExecutableReference, CtMethod test) {
-        if (ctExecutableReference == null) {
-            return;
-        }
-        mapping.putIfAbsent(ctExecutableReference, new HashSet<>());
-        if (mapping.get(ctExecutableReference).contains(test)) {
-            return;
-        }
-        mapping.get(ctExecutableReference).add(test);
-        Set<CtExecutableReference> executables = dependencies.getOrDefault(ctExecutableReference, new HashSet<>());
-        for (CtExecutableReference executableReference : executables) {
-            linkExecutableToTest(mapping, dependencies, executableReference, test);
-            mapping.get(ctExecutableReference).addAll(mapping.get(executableReference));
+        for (Map.Entry<CtExecutable, Set<CtExecutable>> entry : dependencies.entrySet()) {
+            if (entry.getValue().contains(test)) {
+                mapping.putIfAbsent(entry.getKey(), new HashSet<>());
+                mapping.get(entry.getKey()).add(test);
+            }
         }
     }
 
@@ -79,6 +74,6 @@ public class MethodAndDependenciesMappingBuilder implements MappingBuilder {
         return t != null && t.getPosition().getFile().toPath().startsWith(module.getTestPath());
     }
 
-    private class Mapping extends HashMap<CtExecutableReference, Set<CtMethod>> {
+    private class Mapping extends HashMap<CtExecutable, Set<CtMethod>> {
     }
 }

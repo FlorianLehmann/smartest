@@ -2,6 +2,7 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.language.java.ast.method;
 
 import fr.smartest.plugin.Module;
 import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -11,7 +12,7 @@ import java.util.*;
 public class MethodMappingBuilder implements MappingBuilder {
     @Override
     public SourceTestMapping build(Module module, CtModel model) {
-        Map<CtExecutableReference, Set<CtMethod>> mapping = new HashMap<>();
+        Map<CtExecutable, Set<CtMethod>> mapping = new HashMap<>();
         List<CtMethod> elements = model.getElements(new TypeFilter<>(CtMethod.class));
         for (CtMethod element : elements) {
             if (isTest(module, element)) {
@@ -21,16 +22,16 @@ public class MethodMappingBuilder implements MappingBuilder {
         return new SourceTestMapping(mapping);
     }
 
-    private void addTestToMapping(Map<CtExecutableReference, Set<CtMethod>> mapping, CtMethod test) {
+    private void addTestToMapping(Map<CtExecutable, Set<CtMethod>> mapping, CtMethod test) {
         List<CtExecutableReference> exe = test.filterChildren(new TypeFilter<>(CtExecutableReference.class)).list();
         for (CtExecutableReference ctExecutableReference : exe) {
-            mapping.putIfAbsent(ctExecutableReference, new HashSet<>());
-            linkExecutableToTest(mapping, ctExecutableReference, test);
+            mapping.putIfAbsent(ctExecutableReference.getDeclaration(), new HashSet<>());
+            linkExecutableToTest(mapping, ctExecutableReference.getDeclaration(), test);
         }
     }
 
-    private void linkExecutableToTest(Map<CtExecutableReference, Set<CtMethod>> mapping,
-                                      CtExecutableReference ctExecutableReference, CtMethod test) {
+    private void linkExecutableToTest(Map<CtExecutable, Set<CtMethod>> mapping,
+                                      CtExecutable ctExecutableReference, CtMethod test) {
         mapping.get(ctExecutableReference).add(test);
     }
 

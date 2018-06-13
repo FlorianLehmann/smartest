@@ -1,20 +1,20 @@
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.java.ast.method;
 
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.reference.CtExecutableReference;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class SourceTestMapping {
-    private final Map<CtExecutableReference, Set<CtMethod>> mapping;
+    private final Map<CtExecutable, Set<CtMethod>> mapping;
 
-    public SourceTestMapping(Map<CtExecutableReference, Set<CtMethod>> mapping) {
+    public SourceTestMapping(Map<CtExecutable, Set<CtMethod>> mapping) {
         this.mapping = mapping;
     }
 
-    public Set<CtMethod> findTestFor(CtExecutableReference executable) {
+    public Set<CtMethod> findTestFor(CtExecutable executable) {
         return new HashSet<>(mapping.getOrDefault(executable, new HashSet<>()));
     }
 
