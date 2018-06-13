@@ -70,6 +70,7 @@ public class Smartest {
             LocalTime startTime = LocalTime.now();
 
             language.setUp(productionTool.getModules());
+            //TODO METTRE DANS LES PLUGINS LANGUAGES UN ACCEPTEUR POUR LES SCOPES VIDES (PAR DEFAUT)
             testFramework.run(language.getTestsRelatedToChanges("", vcs.diff()), productionTool.getModules());
 
             durations.put(language.getClass().getSimpleName(), Duration.between(startTime, LocalTime.now()));

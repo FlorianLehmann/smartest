@@ -6,9 +6,9 @@ import fr.unice.polytech.pnsinnov.smartest.configuration.ConfigurationHolder;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
+import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PluginLoaderTest {
     @Test
@@ -63,5 +63,23 @@ class PluginLoaderTest {
         assertTrue(pluginLoader.productionTool().accept("Maven"));
         assertTrue(pluginLoader.testFramework().accept("Junit5"));
         assertTrue(pluginLoader.vcs().accept("git"));
+    }
+
+    @Test
+    void loadAllLanguage() throws PluginException {
+        Configuration configuration = new ConfigurationHolder(null, Paths.get(""), null, "Java", null, null, null);
+        PluginLoader pluginLoader = new PluginLoader(configuration);
+
+        assertEquals(1, pluginLoader.getAllLanguages().size());
+
+        configuration = new ConfigurationHolder(null, Paths.get(""), null, "Java method", null, null, null);
+        pluginLoader = new PluginLoader(configuration);
+
+        assertEquals(1, pluginLoader.getAllLanguages().size());
+
+        configuration = new ConfigurationHolder(null, Paths.get(""), null, "absolutely not in scope" + new Random().nextInt(), null, null, null);
+        pluginLoader = new PluginLoader(configuration);
+
+        assertTrue(pluginLoader.getAllLanguages().isEmpty());
     }
 }

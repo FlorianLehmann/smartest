@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.util.HashMap;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,6 +39,14 @@ class SmartestTest extends SuperClone {
     @AfterEach
     void tearDown() throws IOException {
         FileUtils.deleteDirectory(workingDir.toFile());
+    }
+
+    @Test
+    void benchmark() throws PluginException {
+        HashMap<String, Duration> results = smartest.bench();
+
+        assertTrue(results.containsKey("JavaLanguage"));
+        assertEquals(1, results.keySet().size());
     }
 
     @Test
