@@ -3,7 +3,6 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.language.java.ast.method;
 import fr.smartest.plugin.Module;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
@@ -19,7 +18,6 @@ public class MethodAndDependenciesMappingBuilder implements MappingBuilder {
     public SourceTestMapping build(Module module, CtModel model) {
         Mapping mapping = new Mapping();
         DependencyMap dependencies = buildDependencyMap(model);
-        logger.debug("Dependencies in project : " + dependencies);
         List<CtMethod> methods = model.getElements(new TypeFilter<>(CtMethod.class));
         for (CtMethod method : methods) {
             if (isTest(module, method)) {
@@ -59,15 +57,14 @@ public class MethodAndDependenciesMappingBuilder implements MappingBuilder {
             CtExecutableReference overridingExecutable = executable.getReference().getOverridingExecutable();
             if (overridingExecutable != null) {
                 CtExecutable declaration = overridingExecutable.getDeclaration();
-                logger.debug("Found a superclass of " + executable + " : " + declaration);
                 addDependencies(dependencies, declaration);
                 addPolymorphism(dependencies, declaration);
                 dependencies.get(declaration).add(executable);
                 dependencies.get(declaration).addAll(dependencies.get(executable));
             }
         }
-        catch (SpoonException e) {
-            logger.warn("Error while searching for polymorphism", e);
+        catch (Exception e) {
+            logger.warn("Error while searching for polymorphism");
         }
     }
 
