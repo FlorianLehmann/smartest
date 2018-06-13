@@ -3,10 +3,7 @@ package fr.unice.polytech.pnsinnov.smartest.plugin.language;
 import fr.smartest.plugin.Language;
 import fr.smartest.plugin.Module;
 import fr.smartest.plugin.Test;
-import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.Diff;
-import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.DiffFactory;
-import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.InvalidScopeTests;
-import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.Scope;
+import fr.unice.polytech.pnsinnov.smartest.plugin.language.diff.*;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.factory.TreeFactory;
 import fr.unice.polytech.pnsinnov.smartest.plugin.language.tree.persistence.Database;
 import org.apache.log4j.LogManager;
@@ -60,8 +57,13 @@ public class JavaLanguage implements Language {
     public Set<Test> getTestsRelatedToChanges(String scope, Set<fr.smartest.plugin.Diff> fileDiff) {
         Diff diff = null;
         try {
-            diff = new DiffFactory(fileDiff).build(Scope.valueOf(scope.toUpperCase()));
+            if (scope.equals("")) {
+                diff = new DiffClass(fileDiff);
+            } else {
+                diff = new DiffFactory(fileDiff).build(Scope.valueOf(scope.toUpperCase()));
+            }
             return diff.getTestsRelatedToChanges(modules);
+
         } catch (InvalidScopeTests invalidScopeTests) {
             invalidScopeTests.printStackTrace();
         } catch (IOException e) {

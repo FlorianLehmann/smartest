@@ -78,7 +78,7 @@ public class GitVCS implements VCS {
                 diffs.add(createDiff(repository, head, path, Diff.Status.MODIFIED));
             }
 
-            for (String path : git.status().call().getUncommittedChanges()) {
+            for (String path : git.status().call().getChanged()) {
                 diffs.add(createDiff(repository, head, path, Diff.Status.MODIFIED));
             }
             return diffs;
