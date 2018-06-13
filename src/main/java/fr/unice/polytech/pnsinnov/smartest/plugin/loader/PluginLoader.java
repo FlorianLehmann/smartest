@@ -15,10 +15,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class PluginLoader {
     private static final Logger logger = LogManager.getLogger(PluginLoader.class);
@@ -158,5 +155,31 @@ public class PluginLoader {
             logger.error(e);
             throw new SearchPluginException(e);
         }
+    }
+
+    public Set<Language> getAllLanguages() throws PluginException {
+        return getAllCompatiblePlugins(configuration.language(), Language.class);
+    }
+
+    private <T extends Plugin> Set<T> getAllCompatiblePlugins(String identifier, Class<T> cls) throws PluginException {
+        Set<T> pluginFound = new HashSet<>();
+
+        File[] files = listJar();
+        Set<Class<? extends T>> classes = loadFromSmartest(cls);
+        logger.info("Default plugin found in Smartest : " + classes);
+        logger.info("Plugin found in plugin directory : " + Arrays.asList(files));
+
+        for (File jar : files) {
+            classes.addAll(loadJar(jar, cls));
+        }
+
+        for (Class<? extends T> aClass :
+                classes) {
+            Optional<? extends T> toProcess = processClasses(Collections.singleton(aClass), identifier);
+
+            toProcess.ifPresent(pluginFound::add);
+        }
+
+        return pluginFound;
     }
 }
