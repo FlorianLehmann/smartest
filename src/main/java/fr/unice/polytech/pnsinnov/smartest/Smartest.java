@@ -9,6 +9,9 @@ import fr.unice.polytech.pnsinnov.smartest.plugin.loader.PluginLoader;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,5 +53,29 @@ public class Smartest {
         ProductionTool productionTool = pluginLoader.productionTool();
         productionTool.compile();
         return testFramework.run(listTests(scope), productionTool.getModules());
+    }
+
+    public HashMap<String, Duration> bench() throws PluginException {
+        HashMap<String, Duration> durations = new HashMap<>();
+
+        VCS vcs = pluginLoader.vcs();
+        TestFramework testFramework = pluginLoader.testFramework();
+        ProductionTool productionTool = pluginLoader.productionTool();
+        productionTool.compile();
+
+        for (Language language :
+                pluginLoader.getAllLanguages()) {
+            logger.info("Running Smartest with plugin " + language.getClass().getSimpleName());
+
+            LocalTime startTime = LocalTime.now();
+
+            language.setUp(productionTool.getModules());
+            //TODO METTRE DANS LES PLUGINS LANGUAGES UN ACCEPTEUR POUR LES SCOPES VIDES (PAR DEFAUT)
+            testFramework.run(language.getTestsRelatedToChanges("", vcs.diff()), productionTool.getModules());
+
+            durations.put(language.getClass().getSimpleName(), Duration.between(startTime, LocalTime.now()));
+        }
+
+        return durations;
     }
 }

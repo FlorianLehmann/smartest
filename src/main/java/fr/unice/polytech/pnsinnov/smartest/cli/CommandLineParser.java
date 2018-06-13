@@ -2,6 +2,7 @@ package fr.unice.polytech.pnsinnov.smartest.cli;
 
 import fr.unice.polytech.pnsinnov.smartest.Context;
 import fr.unice.polytech.pnsinnov.smartest.Smartest;
+import fr.unice.polytech.pnsinnov.smartest.cli.command.Benchmark;
 import fr.unice.polytech.pnsinnov.smartest.cli.command.Commit;
 import fr.unice.polytech.pnsinnov.smartest.cli.command.ListTests;
 import fr.unice.polytech.pnsinnov.smartest.cli.command.Test;
@@ -16,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @CommandLine.Command(description = "Smartest.", name = "smartest", mixinStandardHelpOptions = true,
-        version = "smartest 2.0", subcommands = {Commit.class, ListTests.class, Test.class})
+        version = "smartest 2.0", subcommands = {Commit.class, ListTests.class, Test.class, Benchmark.class})
 public class CommandLineParser implements Runnable {
     private static final Logger logger = LogManager.getLogger(CommandLineParser.class);
     private final CommandLine commandLine;
