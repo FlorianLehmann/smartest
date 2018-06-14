@@ -11,9 +11,11 @@ import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -62,7 +64,7 @@ public class AST {
     private Set<CtMethod> findTests(SourceTestMapping mapping, List<CtExecutable> executables, Diff diff) {
         Set<CtMethod> tests = new HashSet<>();
         List<Operation> operations = new AstComparator()
-                .compare(diff.getNewContent(), diff.getOldContent())
+                .compare(createCompareModel(diff.getNewContent()), createCompareModel(diff.getOldContent()))
                 .getAllOperations();
         for (Operation operation : operations) {
             CtExecutable parent = operation.getSrcNode().getParent(CtExecutable.class);
@@ -73,6 +75,14 @@ public class AST {
             }
         }
         return tests;
+    }
+
+    private CtPackage createCompareModel(String content) {
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setNoClasspath(true);
+        launcher.getEnvironment().setAutoImports(true);
+        launcher.addInputResource(new VirtualFile(content));
+        return launcher.buildModel().getRootPackage();
     }
 
     private boolean equalsExecutable(CtExecutable executable1, CtExecutable executable2) {

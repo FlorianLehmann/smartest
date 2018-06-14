@@ -5,7 +5,8 @@ import spoon.reflect.CtModel;
 
 public enum Scope {
     METHOD(new MethodMappingBuilder()),
-    METHOD_AND_DEPENDENCIES(new MethodAndDependenciesMappingBuilder());
+    METHOD_AND_DEPENDENCIES(new MethodAndDependenciesMappingBuilder()),
+    METHOD_WITH_POLYMORPHISM(new MethodWithPolymorphismBuilder());
 
     private final MappingBuilder mappingBuilder;
 

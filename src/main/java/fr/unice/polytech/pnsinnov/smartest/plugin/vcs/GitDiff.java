@@ -48,7 +48,7 @@ public class GitDiff implements Diff {
                 this.newContent = FileUtils.readFileToString(new File(this.path.toAbsolutePath().toString()), Charset
                         .defaultCharset());
             } catch (IOException e) {
-                //TODO Faire qqchose ?
+                this.newContent = "";
             }
         }
 

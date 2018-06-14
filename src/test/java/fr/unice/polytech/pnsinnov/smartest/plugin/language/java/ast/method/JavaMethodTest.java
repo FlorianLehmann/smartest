@@ -53,7 +53,7 @@ class JavaMethodTest extends SuperClone {
     @Test
     void noModification() throws VCSException {
         language.setUp(mavenProduction.getModules());
-        assertTrue(language.getTestsRelatedToChanges("method", gitVCS.diff()).isEmpty());
+        assertTrue(language.getTestsRelatedToChanges("method_with_polymorphism", gitVCS.diff()).isEmpty());
     }
 
     @Test
@@ -71,6 +71,6 @@ class JavaMethodTest extends SuperClone {
         expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.BadStudentTest#isNotSmart"));
         expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.SchoolTest#allSmart"));
         expected.add(new TestImplementation("fr.unice.polytech.pnsinnov.StudentTest#shouldCreateAStudent"));
-        assertEquals(expected, language.getTestsRelatedToChanges("best", gitVCS.diff()));
+        assertEquals(expected, language.getTestsRelatedToChanges("method_with_polymorphism", gitVCS.diff()));
     }
 }
