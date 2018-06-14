@@ -35,7 +35,7 @@ public class JavaLanguageAST implements Language {
     public Set<Test> getTestsRelatedToChanges(String scope, Set<fr.smartest.plugin.Diff> fileDiff) {
         Set<Test> tests = new HashSet<>();
         for (Module module : modules) {
-            tests.addAll(new ASTModule(module).getTestsRelatedToChanges(scope, fileDiff));
+            tests.addAll(new ASTModule(module, scope).getTestsRelatedToChanges(scope, fileDiff));
         }
         return tests;
     }
