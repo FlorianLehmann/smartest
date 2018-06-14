@@ -1,3 +1,4 @@
+
 package fr.unice.polytech.pnsinnov.smartest.plugin.language.java.ast.method;
 
 import fr.smartest.plugin.Module;
@@ -6,7 +7,9 @@ import org.apache.log4j.Logger;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.*;
@@ -32,6 +35,9 @@ public class MethodAndDependenciesMappingBuilder implements MappingBuilder {
         List<CtExecutable> executables = model.getRootPackage()
                 .filterChildren(new TypeFilter<>(CtExecutable.class)).list();
         for (CtExecutable executable : executables) {
+            addPolymorphism(dependencies, executable);
+        }
+        for (CtExecutable executable : executables) {
             addDependencies(dependencies, executable);
         }
         return dependencies.inverse();
@@ -43,9 +49,9 @@ public class MethodAndDependenciesMappingBuilder implements MappingBuilder {
             dependencies.put(executable, new HashSet<>(children));
             for (CtExecutable child : children) {
                 addDependencies(dependencies, child);
-                dependencies.get(executable).addAll(dependencies.get(child));
+                Set<CtExecutable> ctExecutables = dependencies.get(child);
+                dependencies.get(executable).addAll(ctExecutables);
             }
-            addPolymorphism(dependencies, executable);
         }
     }
 
@@ -54,18 +60,44 @@ public class MethodAndDependenciesMappingBuilder implements MappingBuilder {
             return;
         }
         try {
-            CtExecutableReference overridingExecutable = executable.getReference().getOverridingExecutable();
-            if (overridingExecutable != null) {
+            for (CtExecutableReference overridingExecutable : overrides(executable)) {
                 CtExecutable declaration = overridingExecutable.getDeclaration();
-                addDependencies(dependencies, declaration);
-                addPolymorphism(dependencies, declaration);
-                dependencies.get(declaration).add(executable);
-                dependencies.get(declaration).addAll(dependencies.get(executable));
+                if (declaration != null) {
+                    addDependencies(dependencies, declaration);
+                    dependencies.get(declaration).add(executable);
+                    addDependencies(dependencies, executable);
+                    dependencies.get(declaration).addAll(dependencies.get(executable));
+                    addPolymorphism(dependencies, declaration);
+                }
             }
         }
         catch (Exception e) {
             logger.warn("Error while searching for polymorphism");
         }
+    }
+
+    private Set<CtExecutableReference> overrides(CtExecutable executable) {
+        CtType parent = executable.getParent(CtType.class);
+        CtTypeReference reference = parent.getReference();
+        Set<CtExecutableReference> overridden = new HashSet<>();
+        CtExecutableReference overridingExecutable = executable.getReference().getOverridingExecutable();
+        if (overridingExecutable != null) {
+            overridden.add(overridingExecutable);
+        }
+        Set<CtTypeReference> superInterfaces = new HashSet<>(reference.getSuperInterfaces());
+        CtTypeReference superclass = reference.getSuperclass();
+        if (superclass != null) {
+            superInterfaces.add(superclass);
+        }
+
+        for (CtTypeReference superInterface : superInterfaces) {
+            for (CtExecutableReference<?> ctExecutableReference : superInterface.getAllExecutables()) {
+                if (executable.getReference().isOverriding(ctExecutableReference)) {
+                    overridden.add(ctExecutableReference);
+                }
+            }
+        }
+        return overridden;
     }
 
     private List<CtExecutable> getChildren(CtExecutable ctExecutable) {
